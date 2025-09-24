@@ -1,0 +1,2842 @@
+# SQL Interview Preparation - 150 Questions with Detailed Answers
+
+## Sample Database Schema for Practice
+
+```sql
+-- Employees table
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    hire_date DATE,
+    job_id VARCHAR(10),
+    salary DECIMAL(8,2),
+    commission_pct DECIMAL(2,2),
+    manager_id INT,
+    department_id INT
+);
+
+-- Departments table
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(30),
+    manager_id INT,
+    location_id INT
+);
+
+-- Jobs table
+CREATE TABLE jobs (
+    job_id VARCHAR(10) PRIMARY KEY,
+    job_title VARCHAR(35),
+    min_salary DECIMAL(8,2),
+    max_salary DECIMAL(8,2)
+);
+
+-- Orders table
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10,2),
+    status VARCHAR(20)
+);
+
+-- Order_items table
+CREATE TABLE order_items (
+    order_item_id INT PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    unit_price DECIMAL(8,2)
+);
+
+-- Sample Data
+INSERT INTO employees VALUES 
+(1, 'John', 'Doe', 'john.doe@email.com', '555-1234', '2020-01-15', 'IT_PROG', 60000, NULL, 100, 10),
+(2, 'Jane', 'Smith', 'jane.smith@email.com', '555-5678', '2019-03-20', 'SA_MAN', 75000, 0.15, NULL, 20),
+(3, 'Bob', 'Johnson', 'bob.johnson@email.com', '555-9012', '2021-07-10', 'IT_PROG', 55000, NULL, 100, 10),
+(100, 'Alice', 'Wilson', 'alice.wilson@email.com', '555-3456', '2018-05-12', 'AD_MGR', 90000, NULL, NULL, 10);
+
+INSERT INTO departments VALUES 
+(10, 'IT', 100, 1700),
+(20, 'Sales', 2, 1800),
+(30, 'Marketing', NULL, 1900);
+```
+
+---
+
+## 🟢 BASIC LEVEL (Questions 1-50)
+
+### **Q1. Select all employees from the employees table.**
+```sql
+SELECT * FROM employees;
+```
+
+### **Q2. Find all employees with salary greater than 60000.**
+```sql
+SELECT * FROM employees 
+WHERE salary > 60000;
+```
+
+### **Q3. Display employee names in uppercase.**
+```sql
+SELECT UPPER(first_name) as first_name_upper, 
+       UPPER(last_name) as last_name_upper 
+FROM employees;
+```
+
+### **Q4. Count total number of employees.**
+```sql
+SELECT COUNT(*) as total_employees 
+FROM employees;
+```
+
+### **Q5. Find the highest salary.**
+```sql
+SELECT MAX(salary) as highest_salary 
+FROM employees;
+```
+
+### **Q6. Find the lowest salary.**
+```sql
+SELECT MIN(salary) as lowest_salary 
+FROM employees;
+```
+
+### **Q7. Calculate average salary.**
+```sql
+SELECT AVG(salary) as average_salary 
+FROM employees;
+```
+
+### **Q8. Find employees hired in 2020.**
+```sql
+SELECT * FROM employees 
+WHERE YEAR(hire_date) = 2020;
+-- OR
+SELECT * FROM employees 
+WHERE hire_date >= '2020-01-01' AND hire_date < '2021-01-01';
+```
+
+### **Q9. Sort employees by salary in descending order.**
+```sql
+SELECT * FROM employees 
+ORDER BY salary DESC;
+```
+
+### **Q10. Display first 5 employees.**
+```sql
+SELECT * FROM employees 
+LIMIT 5;
+-- SQL Server: SELECT TOP 5 * FROM employees;
+```
+
+### **Q11. Find employees whose first name starts with 'J'.**
+```sql
+SELECT * FROM employees 
+WHERE first_name LIKE 'J%';
+```
+
+### **Q12. Find employees whose email contains 'gmail'.**
+```sql
+SELECT * FROM employees 
+WHERE email LIKE '%gmail%';
+```
+
+### **Q13. Display unique department IDs.**
+```sql
+SELECT DISTINCT department_id 
+FROM employees;
+```
+
+### **Q14. Find employees with NULL commission.**
+```sql
+SELECT * FROM employees 
+WHERE commission_pct IS NULL;
+```
+
+### **Q15. Find employees with non-NULL commission.**
+```sql
+SELECT * FROM employees 
+WHERE commission_pct IS NOT NULL;
+```
+
+### **Q16. Concatenate first and last name.**
+```sql
+SELECT CONCAT(first_name, ' ', last_name) as full_name 
+FROM employees;
+```
+
+### **Q17. Find length of employee first names.**
+```sql
+SELECT first_name, LENGTH(first_name) as name_length 
+FROM employees;
+```
+
+### **Q18. Extract year from hire date.**
+```sql
+SELECT first_name, YEAR(hire_date) as hire_year 
+FROM employees;
+```
+
+### **Q19. Find employees hired after 2019.**
+```sql
+SELECT * FROM employees 
+WHERE hire_date > '2019-12-31';
+```
+
+### **Q20. Display current date.**
+```sql
+SELECT CURRENT_DATE as today;
+-- OR SELECT NOW() as current_datetime;
+```
+
+### **Q21. Find employees with salary between 50000 and 70000.**
+```sql
+SELECT * FROM employees 
+WHERE salary BETWEEN 50000 AND 70000;
+```
+
+### **Q22. Find employees in IT or Sales department.**
+```sql
+SELECT * FROM employees 
+WHERE department_id IN (10, 20);
+```
+
+### **Q23. Replace NULL commission with 0.**
+```sql
+SELECT first_name, 
+       COALESCE(commission_pct, 0) as commission 
+FROM employees;
+-- OR ISNULL(commission_pct, 0) in SQL Server
+```
+
+### **Q24. Format salary with 2 decimal places.**
+```sql
+SELECT first_name, 
+       FORMAT(salary, 2) as formatted_salary 
+FROM employees;
+```
+
+### **Q25. Find employees whose name contains 'o'.**
+```sql
+SELECT * FROM employees 
+WHERE first_name LIKE '%o%' OR last_name LIKE '%o%';
+```
+
+### **Q26. Count employees by department.**
+```sql
+SELECT department_id, COUNT(*) as employee_count 
+FROM employees 
+GROUP BY department_id;
+```
+
+### **Q27. Find average salary by department.**
+```sql
+SELECT department_id, AVG(salary) as avg_salary 
+FROM employees 
+GROUP BY department_id;
+```
+
+### **Q28. Find departments with more than 1 employee.**
+```sql
+SELECT department_id, COUNT(*) as employee_count 
+FROM employees 
+GROUP BY department_id 
+HAVING COUNT(*) > 1;
+```
+
+### **Q29. Display employee name and hire month.**
+```sql
+SELECT CONCAT(first_name, ' ', last_name) as full_name,
+       MONTH(hire_date) as hire_month 
+FROM employees;
+```
+
+### **Q30. Find second highest salary.**
+```sql
+SELECT MAX(salary) as second_highest 
+FROM employees 
+WHERE salary < (SELECT MAX(salary) FROM employees);
+```
+
+### **Q31. Find employees with same salary.**
+```sql
+SELECT salary, COUNT(*) as employee_count 
+FROM employees 
+GROUP BY salary 
+HAVING COUNT(*) > 1;
+```
+
+### **Q32. Display employee initials.**
+```sql
+SELECT CONCAT(LEFT(first_name, 1), '.', LEFT(last_name, 1), '.') as initials 
+FROM employees;
+```
+
+### **Q33. Find employees hired in the last 2 years.**
+```sql
+SELECT * FROM employees 
+WHERE hire_date >= DATE_SUB(CURRENT_DATE, INTERVAL 2 YEAR);
+-- SQL Server: WHERE hire_date >= DATEADD(YEAR, -2, GETDATE())
+```
+
+### **Q34. Calculate age of employees based on hire date.**
+```sql
+SELECT first_name, 
+       DATEDIFF(CURRENT_DATE, hire_date) / 365 as years_employed 
+FROM employees;
+```
+
+### **Q35. Round average salary to nearest hundred.**
+```sql
+SELECT ROUND(AVG(salary), -2) as rounded_avg_salary 
+FROM employees;
+```
+
+### **Q36. Find employees hired on weekends.**
+```sql
+SELECT * FROM employees 
+WHERE DAYOFWEEK(hire_date) IN (1, 7);  -- Sunday=1, Saturday=7
+```
+
+### **Q37. Display salary with currency symbol.**
+```sql
+SELECT first_name, 
+       CONCAT('$', FORMAT(salary, 2)) as formatted_salary 
+FROM employees;
+```
+
+### **Q38. Find employees whose email domain is 'email.com'.**
+```sql
+SELECT * FROM employees 
+WHERE email LIKE '%@email.com';
+```
+
+### **Q39. Count characters in employee names.**
+```sql
+SELECT first_name, 
+       LENGTH(first_name) + LENGTH(last_name) as total_name_length 
+FROM employees;
+```
+
+### **Q40. Find employees with odd employee IDs.**
+```sql
+SELECT * FROM employees 
+WHERE employee_id % 2 = 1;
+```
+
+### **Q41. Display first 3 characters of first name.**
+```sql
+SELECT first_name, 
+       LEFT(first_name, 3) as first_three_chars 
+FROM employees;
+```
+
+### **Q42. Find employees hired in January.**
+```sql
+SELECT * FROM employees 
+WHERE MONTH(hire_date) = 1;
+```
+
+### **Q43. Calculate total payroll.**
+```sql
+SELECT SUM(salary) as total_payroll 
+FROM employees;
+```
+
+### **Q44. Find employees with 5-letter first names.**
+```sql
+SELECT * FROM employees 
+WHERE LENGTH(first_name) = 5;
+```
+
+### **Q45. Display hire date in MM/DD/YYYY format.**
+```sql
+SELECT first_name, 
+       DATE_FORMAT(hire_date, '%m/%d/%Y') as formatted_hire_date 
+FROM employees;
+```
+
+### **Q46. Find employees hired on specific date.**
+```sql
+SELECT * FROM employees 
+WHERE hire_date = '2020-01-15';
+```
+
+### **Q47. Calculate salary after 10% raise.**
+```sql
+SELECT first_name, salary, 
+       salary * 1.10 as salary_after_raise 
+FROM employees;
+```
+
+### **Q48. Find employees with manager_id 100.**
+```sql
+SELECT * FROM employees 
+WHERE manager_id = 100;
+```
+
+### **Q49. Display random employee.**
+```sql
+SELECT * FROM employees 
+ORDER BY RAND() 
+LIMIT 1;
+-- SQL Server: ORDER BY NEWID()
+```
+
+### **Q50. Find employees hired in Q1 (first quarter).**
+```sql
+SELECT * FROM employees 
+WHERE MONTH(hire_date) BETWEEN 1 AND 3;
+```
+
+---
+
+## 🟡 INTERMEDIATE LEVEL (Questions 51-100)
+
+### **Q51. Join employees with departments.**
+```sql
+SELECT e.first_name, e.last_name, d.department_name 
+FROM employees e
+JOIN departments d ON e.department_id = d.department_id;
+```
+
+### **Q52. Find employees without departments (LEFT JOIN).**
+```sql
+SELECT e.first_name, e.last_name, d.department_name 
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id
+WHERE d.department_id IS NULL;
+```
+
+### **Q53. Find departments without employees.**
+```sql
+SELECT d.department_name 
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+WHERE e.employee_id IS NULL;
+```
+
+### **Q54. Self-join to find employees with their managers.**
+```sql
+SELECT e.first_name as employee_name, 
+       m.first_name as manager_name 
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.employee_id;
+```
+
+### **Q55. Find employees earning more than average salary.**
+```sql
+SELECT * FROM employees 
+WHERE salary > (SELECT AVG(salary) FROM employees);
+```
+
+### **Q56. Find employees in same department as 'John Doe'.**
+```sql
+SELECT * FROM employees 
+WHERE department_id = (
+    SELECT department_id FROM employees 
+    WHERE first_name = 'John' AND last_name = 'Doe'
+) AND NOT (first_name = 'John' AND last_name = 'Doe');
+```
+
+### **Q57. Find nth highest salary (n=3).**
+```sql
+SELECT DISTINCT salary 
+FROM employees 
+ORDER BY salary DESC 
+LIMIT 1 OFFSET 2;  -- 3rd highest
+
+-- OR using window function
+SELECT salary FROM (
+    SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rank_num
+    FROM employees
+) ranked WHERE rank_num = 3;
+```
+
+### **Q58. Rank employees by salary.**
+```sql
+SELECT first_name, salary,
+       RANK() OVER (ORDER BY salary DESC) as salary_rank,
+       DENSE_RANK() OVER (ORDER BY salary DESC) as dense_rank,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) as row_num
+FROM employees;
+```
+
+### **Q59. Find running total of salaries.**
+```sql
+SELECT first_name, salary,
+       SUM(salary) OVER (ORDER BY employee_id) as running_total
+FROM employees;
+```
+
+### **Q60. Find employees hired in each year with count.**
+```sql
+SELECT YEAR(hire_date) as hire_year, 
+       COUNT(*) as employees_hired 
+FROM employees 
+GROUP BY YEAR(hire_date) 
+ORDER BY hire_year;
+```
+
+### **Q61. Find top 2 highest paid employees per department.**
+```sql
+SELECT * FROM (
+    SELECT first_name, department_id, salary,
+           ROW_NUMBER() OVER (PARTITION BY department_id ORDER BY salary DESC) as rn
+    FROM employees
+) ranked 
+WHERE rn <= 2;
+```
+
+### **Q62. Calculate percentage of total salary by employee.**
+```sql
+SELECT first_name, salary,
+       ROUND(salary * 100.0 / SUM(salary) OVER(), 2) as salary_percentage
+FROM employees;
+```
+
+### **Q63. Find employees with above-average salary in their department.**
+```sql
+SELECT e1.first_name, e1.salary, e1.department_id
+FROM employees e1
+WHERE e1.salary > (
+    SELECT AVG(e2.salary) 
+    FROM employees e2 
+    WHERE e2.department_id = e1.department_id
+);
+```
+
+### **Q64. Find gap between current and previous employee salary.**
+```sql
+SELECT first_name, salary,
+       salary - LAG(salary) OVER (ORDER BY salary) as salary_gap
+FROM employees;
+```
+
+### **Q65. Find employees who earn more than their manager.**
+```sql
+SELECT e.first_name as employee, e.salary as emp_salary,
+       m.first_name as manager, m.salary as mgr_salary
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary;
+```
+
+### **Q66. Pivot departments by location.**
+```sql
+-- MySQL approach
+SELECT 
+    SUM(CASE WHEN department_id = 10 THEN 1 ELSE 0 END) as IT_dept,
+    SUM(CASE WHEN department_id = 20 THEN 1 ELSE 0 END) as Sales_dept,
+    SUM(CASE WHEN department_id = 30 THEN 1 ELSE 0 END) as Marketing_dept
+FROM employees;
+```
+
+### **Q67. Find duplicate email addresses.**
+```sql
+SELECT email, COUNT(*) as duplicate_count 
+FROM employees 
+GROUP BY email 
+HAVING COUNT(*) > 1;
+```
+
+### **Q68. Find employees hired in same month and year.**
+```sql
+SELECT YEAR(hire_date) as hire_year, 
+       MONTH(hire_date) as hire_month,
+       COUNT(*) as employee_count 
+FROM employees 
+GROUP BY YEAR(hire_date), MONTH(hire_date)
+HAVING COUNT(*) > 1;
+```
+
+### **Q69. Calculate tenure of employees in years and months.**
+```sql
+SELECT first_name,
+       TIMESTAMPDIFF(YEAR, hire_date, CURRENT_DATE) as years,
+       TIMESTAMPDIFF(MONTH, hire_date, CURRENT_DATE) % 12 as months
+FROM employees;
+```
+
+### **Q70. Find employees with longest tenure.**
+```sql
+SELECT first_name, hire_date,
+       DATEDIFF(CURRENT_DATE, hire_date) as days_employed
+FROM employees
+ORDER BY days_employed DESC
+LIMIT 1;
+```
+
+### **Q71. Create employee performance tiers based on salary.**
+```sql
+SELECT first_name, salary,
+       CASE 
+           WHEN salary >= 80000 THEN 'High Performer'
+           WHEN salary >= 60000 THEN 'Average Performer' 
+           ELSE 'Entry Level'
+       END as performance_tier
+FROM employees;
+```
+
+### **Q72. Find quarter-wise hiring.**
+```sql
+SELECT 
+    YEAR(hire_date) as year,
+    QUARTER(hire_date) as quarter,
+    COUNT(*) as hires
+FROM employees 
+GROUP BY YEAR(hire_date), QUARTER(hire_date)
+ORDER BY year, quarter;
+```
+
+### **Q73. Find employees whose salary is closest to average.**
+```sql
+SELECT first_name, salary,
+       ABS(salary - (SELECT AVG(salary) FROM employees)) as diff_from_avg
+FROM employees
+ORDER BY diff_from_avg
+LIMIT 1;
+```
+
+### **Q74. Create salary bands.**
+```sql
+SELECT 
+    CASE 
+        WHEN salary < 50000 THEN '< 50K'
+        WHEN salary < 70000 THEN '50K-70K'
+        WHEN salary < 90000 THEN '70K-90K'
+        ELSE '90K+'
+    END as salary_band,
+    COUNT(*) as employee_count
+FROM employees 
+GROUP BY 
+    CASE 
+        WHEN salary < 50000 THEN '< 50K'
+        WHEN salary < 70000 THEN '50K-70K'
+        WHEN salary < 90000 THEN '70K-90K'
+        ELSE '90K+'
+    END;
+```
+
+### **Q75. Find employees hired on same day.**
+```sql
+SELECT hire_date, 
+       GROUP_CONCAT(CONCAT(first_name, ' ', last_name)) as employees
+FROM employees 
+GROUP BY hire_date 
+HAVING COUNT(*) > 1;
+```
+
+### **Q76. Calculate moving average of salary.**
+```sql
+SELECT first_name, salary,
+       AVG(salary) OVER (ORDER BY employee_id ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as moving_avg
+FROM employees;
+```
+
+### **Q77. Find salary percentiles.**
+```sql
+SELECT first_name, salary,
+       PERCENT_RANK() OVER (ORDER BY salary) * 100 as percentile
+FROM employees;
+```
+
+### **Q78. Find employees in top 25% by salary.**
+```sql
+SELECT first_name, salary
+FROM (
+    SELECT first_name, salary,
+           NTILE(4) OVER (ORDER BY salary DESC) as quartile
+    FROM employees
+) quartiled
+WHERE quartile = 1;
+```
+
+### **Q79. Find most common hire month.**
+```sql
+SELECT MONTH(hire_date) as hire_month, COUNT(*) as hire_count
+FROM employees 
+GROUP BY MONTH(hire_date) 
+ORDER BY hire_count DESC 
+LIMIT 1;
+```
+
+### **Q80. Calculate cumulative percentage of salaries.**
+```sql
+SELECT first_name, salary,
+       SUM(salary) OVER (ORDER BY salary) * 100.0 / 
+       SUM(salary) OVER () as cumulative_percentage
+FROM employees;
+```
+
+### **Q81. Find employees with unusual email domains.**
+```sql
+SELECT email,
+       SUBSTRING_INDEX(email, '@', -1) as domain
+FROM employees
+WHERE SUBSTRING_INDEX(email, '@', -1) NOT IN ('email.com', 'company.com');
+```
+
+### **Q82. Generate employee hierarchy.**
+```sql
+WITH RECURSIVE employee_hierarchy AS (
+    -- Anchor: Top-level managers
+    SELECT employee_id, first_name, manager_id, 1 as level
+    FROM employees 
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive: Subordinates
+    SELECT e.employee_id, e.first_name, e.manager_id, eh.level + 1
+    FROM employees e
+    INNER JOIN employee_hierarchy eh ON e.manager_id = eh.employee_id
+)
+SELECT * FROM employee_hierarchy ORDER BY level, employee_id;
+```
+
+### **Q83. Find salary outliers (beyond 2 standard deviations).**
+```sql
+SELECT first_name, salary
+FROM employees
+WHERE salary > (SELECT AVG(salary) + 2 * STDDEV(salary) FROM employees)
+   OR salary < (SELECT AVG(salary) - 2 * STDDEV(salary) FROM employees);
+```
+
+### **Q84. Calculate employee retention by hire year.**
+```sql
+SELECT 
+    YEAR(hire_date) as hire_year,
+    COUNT(*) as hired,
+    COUNT(*) as still_employed,  -- Assuming no terminations in sample data
+    COUNT(*) * 100.0 / COUNT(*) as retention_rate
+FROM employees 
+GROUP BY YEAR(hire_date);
+```
+
+### **Q85. Find employees with similar names (soundex).**
+```sql
+SELECT e1.first_name as name1, e2.first_name as name2
+FROM employees e1, employees e2
+WHERE e1.employee_id < e2.employee_id 
+AND SOUNDEX(e1.first_name) = SOUNDEX(e2.first_name);
+```
+
+### **Q86. Create age groups based on hire date.**
+```sql
+SELECT 
+    CASE 
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 2 THEN 'New (< 2 years)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 5 THEN 'Experienced (2-5 years)'
+        ELSE 'Senior (5+ years)'
+    END as experience_level,
+    COUNT(*) as employee_count
+FROM employees 
+GROUP BY 
+    CASE 
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 2 THEN 'New (< 2 years)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 5 THEN 'Experienced (2-5 years)'
+        ELSE 'Senior (5+ years)'
+    END;
+```
+
+### **Q87. Find busiest hiring months across all years.**
+```sql
+SELECT MONTHNAME(hire_date) as month_name, COUNT(*) as hires
+FROM employees 
+GROUP BY MONTH(hire_date), MONTHNAME(hire_date)
+ORDER BY hires DESC;
+```
+
+### **Q88. Calculate salary growth if everyone gets 5% annual raise.**
+```sql
+SELECT first_name, salary,
+       salary * POWER(1.05, DATEDIFF(CURRENT_DATE, hire_date) / 365) as projected_salary
+FROM employees;
+```
+
+### **Q89. Find employees whose first and last names have same length.**
+```sql
+SELECT first_name, last_name
+FROM employees 
+WHERE LENGTH(first_name) = LENGTH(last_name);
+```
+
+### **Q90. Create a salary comparison report.**
+```sql
+SELECT 
+    first_name,
+    salary,
+    AVG(salary) OVER () as company_avg,
+    salary - AVG(salary) OVER () as diff_from_avg,
+    CASE 
+        WHEN salary > AVG(salary) OVER () THEN 'Above Average'
+        WHEN salary = AVG(salary) OVER () THEN 'Average'
+        ELSE 'Below Average'
+    END as salary_comparison
+FROM employees;
+```
+
+### **Q91. Find the most and least common job titles.**
+```sql
+SELECT job_id, COUNT(*) as employee_count
+FROM employees 
+GROUP BY job_id 
+HAVING COUNT(*) = (SELECT MAX(cnt) FROM (SELECT COUNT(*) as cnt FROM employees GROUP BY job_id) t)
+OR COUNT(*) = (SELECT MIN(cnt) FROM (SELECT COUNT(*) as cnt FROM employees GROUP BY job_id) t);
+```
+
+### **Q92. Calculate department salary statistics.**
+```sql
+SELECT 
+    department_id,
+    COUNT(*) as employee_count,
+    MIN(salary) as min_salary,
+    MAX(salary) as max_salary,
+    AVG(salary) as avg_salary,
+    STDDEV(salary) as salary_stddev,
+    SUM(salary) as total_payroll
+FROM employees 
+GROUP BY department_id;
+```
+
+### **Q93. Find employees hired on the same day of week.**
+```sql
+SELECT 
+    DAYNAME(hire_date) as day_of_week,
+    COUNT(*) as employees_hired
+FROM employees 
+GROUP BY DAYOFWEEK(hire_date), DAYNAME(hire_date)
+ORDER BY employees_hired DESC;
+```
+
+### **Q94. Create employee contact directory.**
+```sql
+SELECT 
+    CONCAT(last_name, ', ', first_name) as name,
+    email,
+    CONCAT('(', LEFT(phone, 3), ') ', MID(phone, 4, 3), '-', RIGHT(phone, 4)) as formatted_phone,
+    d.department_name
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id
+ORDER BY last_name, first_name;
+```
+
+### **Q95. Find potential data quality issues.**
+```sql
+SELECT 
+    employee_id,
+    first_name,
+    last_name,
+    email,
+    CASE 
+        WHEN email NOT LIKE '%@%.%' THEN 'Invalid email format'
+        WHEN LENGTH(phone) < 8 THEN 'Phone too short'
+        WHEN salary <= 0 THEN 'Invalid salary'
+        WHEN hire_date > CURRENT_DATE THEN 'Future hire date'
+        ELSE 'OK'
+    END as data_quality_issue
+FROM employees
+WHERE email NOT LIKE '%@%.%' 
+   OR LENGTH(phone) < 8 
+   OR salary <= 0 
+   OR hire_date > CURRENT_DATE;
+```
+
+### **Q96. Calculate employee anniversary dates.**
+```sql
+SELECT 
+    first_name,
+    hire_date,
+    DATE_ADD(hire_date, INTERVAL YEAR(CURRENT_DATE) - YEAR(hire_date) YEAR) as this_year_anniversary,
+    DATEDIFF(CURRENT_DATE, hire_date) / 365 as years_employed
+FROM employees;
+```
+
+### **Q97. Find employees with sequential IDs.**
+```sql
+SELECT 
+    e1.employee_id,
+    e1.first_name,
+    e2.employee_id as next_id,
+    e2.first_name as next_employee
+FROM employees e1
+LEFT JOIN employees e2 ON e1.employee_id + 1 = e2.employee_id
+ORDER BY e1.employee_id;
+```
+
+### **Q98. Create salary bands with statistics.**
+```sql
+SELECT 
+    FLOOR(salary / 10000) * 10000 as salary_band_start,
+    FLOOR(salary / 10000) * 10000 + 9999 as salary_band_end,
+    COUNT(*) as employee_count,
+    MIN(salary) as min_in_band,
+    MAX(salary) as max_in_band
+FROM employees 
+GROUP BY FLOOR(salary / 10000)
+ORDER BY salary_band_start;
+```
+
+### **Q99. Find employees with manager in different department.**
+```sql
+SELECT 
+    e.first_name as employee,
+    e.department_id as emp_dept,
+    m.first_name as manager,
+    m.department_id as mgr_dept
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.department_id != m.department_id;
+```
+
+### **Q100. Generate employee ID cards format.**
+```sql
+SELECT 
+    CONCAT('EMP-', LPAD(employee_id, 4, '0')) as badge_id,
+    UPPER(CONCAT(last_name, ', ', first_name)) as display_name,
+    d.department_name,
+    j.job_title,
+    DATE_FORMAT(hire_date, '%b %Y') as hire_date_short
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id
+LEFT JOIN jobs j ON e.job_id = j.job_id;
+```
+
+---
+
+## 🔴 ADVANCED LEVEL (Questions 101-150)
+
+### **Q101. Complex recursive query for organization chart.**
+```sql
+WITH RECURSIVE org_chart AS (
+    SELECT 
+        employee_id, 
+        first_name, 
+        manager_id, 
+        salary,
+        1 as level,
+        CAST(first_name AS CHAR(1000)) as path
+    FROM employees 
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        e.employee_id, 
+        e.first_name, 
+        e.manager_id, 
+        e.salary,
+        oc.level + 1,
+        CONCAT(oc.path, ' -> ', e.first_name)
+    FROM employees e
+    INNER JOIN org_chart oc ON e.manager_id = oc.employee_id
+)
+SELECT 
+    REPEAT('  ', level - 1) as indent,
+    first_name,
+    level,
+    path,
+    salary
+FROM org_chart 
+ORDER BY path;
+```
+
+### **Q102. Advanced window functions for salary analysis.**
+```sql
+SELECT 
+    first_name,
+    department_id,
+    salary,
+    -- Ranking functions
+    RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_rank,
+    PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary) as percentile_rank,
+    
+    -- Distribution functions  
+    NTILE(3) OVER (PARTITION BY department_id ORDER BY salary) as salary_tertile,
+    
+    -- Offset functions
+    LAG(salary, 1) OVER (PARTITION BY department_id ORDER BY salary) as prev_salary,
+    LEAD(salary, 1) OVER (PARTITION BY department_id ORDER BY salary) as next_salary,
+    
+    -- Aggregate functions
+    SUM(salary) OVER (PARTITION BY department_id) as dept_total_payroll,
+    AVG(salary) OVER (PARTITION BY department_id) as dept_avg_salary,
+    COUNT(*) OVER (PARTITION BY department_id) as dept_employee_count,
+    
+    -- Frame functions
+    SUM(salary) OVER (PARTITION BY department_id ORDER BY employee_id 
+                     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as running_payroll
+FROM employees
+ORDER BY department_id, salary DESC;
+```
+
+### **Q103. Dynamic pivot for department salaries by job.**
+```sql
+SELECT 
+    job_id,
+    SUM(CASE WHEN department_id = 10 THEN salary END) as IT_total,
+    SUM(CASE WHEN department_id = 20 THEN salary END) as Sales_total,
+    SUM(CASE WHEN department_id = 30 THEN salary END) as Marketing_total,
+    AVG(CASE WHEN department_id = 10 THEN salary END) as IT_avg,
+    AVG(CASE WHEN department_id = 20 THEN salary END) as Sales_avg,
+    AVG(CASE WHEN department_id = 30 THEN salary END) as Marketing_avg
+FROM employees 
+GROUP BY job_id;
+```
+
+### **Q104. Complex subquery to find employees earning more than department average.**
+```sql
+SELECT 
+    e.first_name,
+    e.salary,
+    e.department_id,
+    dept_stats.avg_salary,
+    ROUND((e.salary - dept_stats.avg_salary) / dept_stats.avg_salary * 100, 2) as percent_above_avg
+FROM employees e
+INNER JOIN (
+    SELECT 
+        department_id,
+        AVG(salary) as avg_salary,
+        STDDEV(salary) as stddev_salary
+    FROM employees 
+    GROUP BY department_id
+) dept_stats ON e.department_id = dept_stats.department_id
+WHERE e.salary > dept_stats.avg_salary;
+```
+
+### **Q105. Advanced date manipulation - find hiring patterns.**
+```sql
+SELECT 
+    YEAR(hire_date) as hire_year,
+    QUARTER(hire_date) as hire_quarter,
+    COUNT(*) as hires_in_quarter,
+    LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date), QUARTER(hire_date)) as prev_quarter_hires,
+    COUNT(*) - LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date), QUARTER(hire_date)) as hiring_change,
+    ROUND(
+        (COUNT(*) - LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date), QUARTER(hire_date))) * 100.0 
+        / LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date), QUARTER(hire_date)), 2
+    ) as percent_change
+FROM employees 
+GROUP BY YEAR(hire_date), QUARTER(hire_date)
+ORDER BY hire_year, hire_quarter;
+```
+
+### **Q106. Complex CTE for employee performance tiers.**
+```sql
+WITH employee_stats AS (
+    SELECT 
+        employee_id,
+        first_name,
+        salary,
+        department_id,
+        DATEDIFF(CURRENT_DATE, hire_date) as days_employed
+    FROM employees
+),
+salary_percentiles AS (
+    SELECT 
+        *,
+        PERCENT_RANK() OVER (ORDER BY salary) as salary_percentile,
+        PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary) as dept_salary_percentile
+    FROM employee_stats
+),
+performance_tiers AS (
+    SELECT 
+        *,
+        CASE 
+            WHEN salary_percentile >= 0.8 THEN 'Top Performer'
+            WHEN salary_percentile >= 0.6 THEN 'High Performer'
+            WHEN salary_percentile >= 0.4 THEN 'Average Performer'
+            WHEN salary_percentile >= 0.2 THEN 'Below Average'
+            ELSE 'Low Performer'
+        END as company_tier,
+        CASE 
+            WHEN dept_salary_percentile >= 0.8 THEN 'Top in Dept'
+            WHEN dept_salary_percentile >= 0.6 THEN 'High in Dept'
+            WHEN dept_salary_percentile >= 0.4 THEN 'Average in Dept'
+            ELSE 'Below Dept Average'
+        END as dept_tier
+    FROM salary_percentiles
+)
+SELECT 
+    first_name,
+    salary,
+    department_id,
+    company_tier,
+    dept_tier,
+    ROUND(salary_percentile * 100, 1) as salary_percentile_rank,
+    ROUND(dept_salary_percentile * 100, 1) as dept_percentile_rank
+FROM performance_tiers
+ORDER BY salary DESC;
+```
+
+### **Q107. Advanced string manipulation for data cleaning.**
+```sql
+SELECT 
+    employee_id,
+    -- Clean and standardize names
+    TRIM(REGEXP_REPLACE(first_name, '[^A-Za-z]', '')) as cleaned_first_name,
+    TRIM(REGEXP_REPLACE(last_name, '[^A-Za-z]', '')) as cleaned_last_name,
+    
+    -- Standardize email format
+    LOWER(TRIM(email)) as standardized_email,
+    
+    -- Extract and format phone number
+    REGEXP_REPLACE(phone, '[^0-9]', '') as digits_only,
+    CONCAT('(', 
+           SUBSTRING(REGEXP_REPLACE(phone, '[^0-9]', ''), 1, 3), 
+           ') ',
+           SUBSTRING(REGEXP_REPLACE(phone, '[^0-9]', ''), 4, 3),
+           '-',
+           SUBSTRING(REGEXP_REPLACE(phone, '[^0-9]', ''), 7, 4)
+    ) as formatted_phone,
+    
+    -- Data validation flags
+    CASE 
+        WHEN email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,} THEN 'Valid'
+        ELSE 'Invalid'
+    END as email_validation,
+    
+    CASE 
+        WHEN LENGTH(REGEXP_REPLACE(phone, '[^0-9]', '')) = 10 THEN 'Valid'
+        ELSE 'Invalid'
+    END as phone_validation
+FROM employees;
+```
+
+### **Q108. Complex aggregation with multiple grouping sets.**
+```sql
+SELECT 
+    COALESCE(CAST(department_id AS CHAR), 'ALL DEPARTMENTS') as department,
+    COALESCE(job_id, 'ALL JOBS') as job,
+    COUNT(*) as employee_count,
+    AVG(salary) as avg_salary,
+    MIN(salary) as min_salary,
+    MAX(salary) as max_salary,
+    SUM(salary) as total_salary
+FROM employees 
+GROUP BY department_id, job_id WITH ROLLUP
+ORDER BY 
+    CASE WHEN department_id IS NULL THEN 1 ELSE 0 END,
+    department_id,
+    CASE WHEN job_id IS NULL THEN 1 ELSE 0 END,
+    job_id;
+```
+
+### **Q109. Advanced analytics - cohort analysis.**
+```sql
+WITH monthly_cohorts AS (
+    SELECT 
+        DATE_FORMAT(hire_date, '%Y-%m') as cohort_month,
+        employee_id,
+        hire_date
+    FROM employees
+),
+cohort_sizes AS (
+    SELECT 
+        cohort_month,
+        COUNT(*) as cohort_size
+    FROM monthly_cohorts
+    GROUP BY cohort_month
+)
+SELECT 
+    c.cohort_month,
+    c.cohort_size,
+    -- Simulate retention (in real scenario, would join with active employees)
+    c.cohort_size as retained_employees,
+    ROUND(c.cohort_size * 100.0 / c.cohort_size, 2) as retention_rate,
+    
+    -- Calculate average tenure for cohort
+    AVG(DATEDIFF(CURRENT_DATE, mc.hire_date)) as avg_tenure_days
+FROM cohort_sizes c
+JOIN monthly_cohorts mc ON c.cohort_month = mc.cohort_month
+GROUP BY c.cohort_month, c.cohort_size
+ORDER BY c.cohort_month;
+```
+
+### **Q110. Complex join with multiple conditions.**
+```sql
+SELECT 
+    e.first_name,
+    e.salary,
+    d.department_name,
+    j.job_title,
+    j.min_salary,
+    j.max_salary,
+    CASE 
+        WHEN e.salary < j.min_salary THEN 'Below Range'
+        WHEN e.salary > j.max_salary THEN 'Above Range'
+        ELSE 'In Range'
+    END as salary_range_status,
+    
+    -- Manager information
+    m.first_name as manager_name,
+    m.salary as manager_salary,
+    e.salary - m.salary as salary_diff_from_manager
+    
+FROM employees e
+LEFT JOIN departments d ON e.department_id = d.department_id
+LEFT JOIN jobs j ON e.job_id = j.job_id
+LEFT JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary IS NOT NULL
+ORDER BY e.department_id, e.salary DESC;
+```
+
+### **Q111. Advanced window function - moving averages and trends.**
+```sql
+WITH salary_trends AS (
+    SELECT 
+        employee_id,
+        first_name,
+        hire_date,
+        salary,
+        ROW_NUMBER() OVER (ORDER BY hire_date) as hire_sequence
+    FROM employees
+)
+SELECT 
+    first_name,
+    hire_date,
+    salary,
+    hire_sequence,
+    
+    -- Moving averages
+    AVG(salary) OVER (ORDER BY hire_sequence ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as ma_3,
+    AVG(salary) OVER (ORDER BY hire_sequence ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) as ma_5,
+    
+    -- Salary trends
+    salary - LAG(salary, 1) OVER (ORDER BY hire_sequence) as salary_change,
+    CASE 
+        WHEN salary > LAG(salary, 1) OVER (ORDER BY hire_sequence) THEN 'Increasing'
+        WHEN salary < LAG(salary, 1) OVER (ORDER BY hire_sequence) THEN 'Decreasing'
+        ELSE 'Stable'
+    END as salary_trend,
+    
+    -- Percentile within hiring sequence
+    PERCENT_RANK() OVER (ORDER BY hire_sequence) as hire_percentile
+FROM salary_trends
+ORDER BY hire_sequence;
+```
+
+### **Q112. Complex conditional aggregation.**
+```sql
+SELECT 
+    department_id,
+    
+    -- Conditional counts
+    COUNT(*) as total_employees,
+    COUNT(CASE WHEN salary > 60000 THEN 1 END) as high_earners,
+    COUNT(CASE WHEN YEAR(hire_date) >= 2020 THEN 1 END) as recent_hires,
+    COUNT(CASE WHEN commission_pct IS NOT NULL THEN 1 END) as commission_employees,
+    
+    -- Conditional averages
+    AVG(CASE WHEN salary > 60000 THEN salary END) as avg_high_earner_salary,
+    AVG(CASE WHEN YEAR(hire_date) >= 2020 THEN salary END) as avg_recent_hire_salary,
+    
+    -- Ratios and percentages
+    ROUND(COUNT(CASE WHEN salary > 60000 THEN 1 END) * 100.0 / COUNT(*), 2) as high_earner_pct,
+    ROUND(COUNT(CASE WHEN YEAR(hire_date) >= 2020 THEN 1 END) * 100.0 / COUNT(*), 2) as recent_hire_pct,
+    
+    -- Salary distribution
+    MIN(salary) as min_salary,
+    MAX(salary) as max_salary,
+    ROUND(STDDEV(salary), 2) as salary_stddev,
+    MAX(salary) - MIN(salary) as salary_range
+    
+FROM employees 
+GROUP BY department_id
+HAVING COUNT(*) > 0
+ORDER BY department_id;
+```
+
+### **Q113. Advanced text analysis and pattern matching.**
+```sql
+SELECT 
+    first_name,
+    last_name,
+    email,
+    
+    -- Name analysis
+    LENGTH(first_name) + LENGTH(last_name) as total_name_length,
+    CASE 
+        WHEN first_name REGEXP '^[AEIOU]' THEN 'Vowel Start'
+        ELSE 'Consonant Start'
+    END as name_start_type,
+    
+    -- Email domain analysis
+    SUBSTRING_INDEX(email, '@', -1) as email_domain,
+    CASE 
+        WHEN email LIKE '%.com' THEN 'Commercial'
+        WHEN email LIKE '%.org' THEN 'Organization'
+        WHEN email LIKE '%.net' THEN 'Network'
+        ELSE 'Other'
+    END as domain_type,
+    
+    -- Phone pattern analysis
+    CASE 
+        WHEN phone REGEXP '^\\+1-[0-9]{3}-[0-9]{3}-[0-9]{4} THEN 'Format A'
+        WHEN phone REGEXP '^[0-9]{3}\\.[0-9]{3}\\.[0-9]{4} THEN 'Format B'
+        WHEN phone REGEXP '^\\([0-9]{3}\\) [0-9]{3}-[0-9]{4} THEN 'Format C'
+        ELSE 'Non-standard'
+    END as phone_format,
+    
+    -- Character frequency in names
+    (LENGTH(first_name) - LENGTH(REPLACE(LOWER(first_name), 'a', ''))) as letter_a_count,
+    (LENGTH(CONCAT(first_name, last_name)) - LENGTH(REPLACE(LOWER(CONCAT(first_name, last_name)), 'e', ''))) as letter_e_count
+    
+FROM employees;
+```
+
+### **Q114. Complex temporal analysis.**
+```sql
+WITH hire_analysis AS (
+    SELECT 
+        *,
+        DAYOFWEEK(hire_date) as hire_day_of_week,
+        DAYNAME(hire_date) as hire_day_name,
+        WEEK(hire_date) as hire_week,
+        DAYOFYEAR(hire_date) as hire_day_of_year,
+        
+        -- Calculate business days since hire (approximate)
+        CASE 
+            WHEN DAYOFWEEK(hire_date) = 1 THEN DATEDIFF(CURRENT_DATE, hire_date) - (DATEDIFF(CURRENT_DATE, hire_date) / 7 * 2)
+            WHEN DAYOFWEEK(hire_date) = 7 THEN DATEDIFF(CURRENT_DATE, hire_date) - (DATEDIFF(CURRENT_DATE, hire_date) / 7 * 2) - 1
+            ELSE DATEDIFF(CURRENT_DATE, hire_date) - (DATEDIFF(CURRENT_DATE, hire_date) / 7 * 2)
+        END as approx_business_days_employed
+    FROM employees
+)
+SELECT 
+    first_name,
+    hire_date,
+    hire_day_name,
+    
+    -- Categorize hire timing
+    CASE 
+        WHEN hire_day_of_week IN (2, 3, 4) THEN 'Mid-week'
+        WHEN hire_day_of_week IN (1, 7) THEN 'Weekend'
+        ELSE 'Monday/Friday'
+    END as hire_timing_category,
+    
+    -- Seasonal analysis
+    CASE 
+        WHEN MONTH(hire_date) IN (12, 1, 2) THEN 'Winter'
+        WHEN MONTH(hire_date) IN (3, 4, 5) THEN 'Spring'
+        WHEN MONTH(hire_date) IN (6, 7, 8) THEN 'Summer'
+        ELSE 'Fall'
+    END as hire_season,
+    
+    -- Time-based calculations
+    approx_business_days_employed,
+    ROUND(approx_business_days_employed / 250, 2) as approx_work_years, -- Assuming 250 work days/year
+    
+    -- Anniversary calculations
+    DATE_ADD(hire_date, INTERVAL 1 YEAR) as first_anniversary,
+    CASE 
+        WHEN DATE_ADD(hire_date, INTERVAL YEAR(CURRENT_DATE) - YEAR(hire_date) + 1 YEAR) BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY)
+        THEN 'Anniversary Soon'
+        ELSE 'No Upcoming Anniversary'
+    END as anniversary_status
+    
+FROM hire_analysis
+ORDER BY hire_date;
+```
+
+### **Q115. Advanced salary analysis with statistical functions.**
+```sql
+WITH salary_statistics AS (
+    SELECT 
+        employee_id,
+        first_name,
+        department_id,
+        salary,
+        
+        -- Company-wide statistics
+        AVG(salary) OVER () as company_avg_salary,
+        STDDEV(salary) OVER () as company_salary_stddev,
+        MIN(salary) OVER () as company_min_salary,
+        MAX(salary) OVER () as company_max_salary,
+        
+        -- Department statistics
+        AVG(salary) OVER (PARTITION BY department_id) as dept_avg_salary,
+        STDDEV(salary) OVER (PARTITION BY department_id) as dept_salary_stddev,
+        COUNT(*) OVER (PARTITION BY department_id) as dept_employee_count
+    FROM employees
+)
+SELECT 
+    first_name,
+    department_id,
+    salary,
+    
+    -- Standardized scores (z-scores)
+    ROUND((salary - company_avg_salary) / NULLIF(company_salary_stddev, 0), 2) as company_z_score,
+    ROUND((salary - dept_avg_salary) / NULLIF(dept_salary_stddev, 0), 2) as dept_z_score,
+    
+    -- Classifications based on standard deviations
+    CASE 
+        WHEN ABS((salary - company_avg_salary) / NULLIF(company_salary_stddev, 0)) > 2 THEN 'Extreme Outlier'
+        WHEN ABS((salary - company_avg_salary) / NULLIF(company_salary_stddev, 0)) > 1.5 THEN 'Moderate Outlier'
+        WHEN ABS((salary - company_avg_salary) / NULLIF(company_salary_stddev, 0)) > 1 THEN 'Above/Below Average'
+        ELSE 'Normal Range'
+    END as salary_classification,
+    
+    -- Percentile rankings
+    ROUND(PERCENT_RANK() OVER (ORDER BY salary) * 100, 1) as company_percentile,
+    ROUND(PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary) * 100, 1) as dept_percentile,
+    
+    -- Salary adequacy analysis
+    CASE 
+        WHEN dept_employee_count >= 3 AND salary < dept_avg_salary - dept_salary_stddev THEN 'Significantly Underpaid'
+        WHEN salary < dept_avg_salary * 0.9 THEN 'Potentially Underpaid'
+        WHEN salary > dept_avg_salary * 1.2 THEN 'Well Compensated'
+        ELSE 'Fairly Compensated'
+    END as compensation_assessment
+    
+FROM salary_statistics
+ORDER BY department_id, salary DESC;
+```
+
+### **Q116. Complex data quality and integrity checks.**
+```sql
+WITH data_quality_checks AS (
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        email,
+        phone,
+        hire_date,
+        salary,
+        department_id,
+        manager_id,
+        
+        -- Individual field validations
+        CASE WHEN first_name IS NULL OR TRIM(first_name) = '' THEN 1 ELSE 0 END as missing_first_name,
+        CASE WHEN last_name IS NULL OR TRIM(last_name) = '' THEN 1 ELSE 0 END as missing_last_name,
+        CASE WHEN email IS NULL OR email NOT REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,} THEN 1 ELSE 0 END as invalid_email,
+        CASE WHEN phone IS NULL OR LENGTH(REGEXP_REPLACE(phone, '[^0-9]', '')) != 10 THEN 1 ELSE 0 END as invalid_phone,
+        CASE WHEN hire_date IS NULL OR hire_date > CURRENT_DATE THEN 1 ELSE 0 END as invalid_hire_date,
+        CASE WHEN salary IS NULL OR salary <= 0 OR salary > 1000000 THEN 1 ELSE 0 END as invalid_salary,
+        CASE WHEN department_id IS NULL THEN 1 ELSE 0 END as missing_department,
+        
+        -- Cross-field validations
+        CASE WHEN manager_id = employee_id THEN 1 ELSE 0 END as self_manager,
+        CASE WHEN LENGTH(first_name) + LENGTH(last_name) < 3 THEN 1 ELSE 0 END as name_too_short
+    FROM employees
+)
+SELECT 
+    employee_id,
+    CONCAT(first_name, ' ', last_name) as full_name,
+    
+    -- Individual issues
+    missing_first_name + missing_last_name + invalid_email + invalid_phone + 
+    invalid_hire_date + invalid_salary + missing_department + self_manager + 
+    name_too_short as total_issues,
+    
+    -- Issue details
+    CASE WHEN missing_first_name = 1 THEN 'Missing First Name; ' ELSE '' END +
+    CASE WHEN missing_last_name = 1 THEN 'Missing Last Name; ' ELSE '' END +
+    CASE WHEN invalid_email = 1 THEN 'Invalid Email; ' ELSE '' END +
+    CASE WHEN invalid_phone = 1 THEN 'Invalid Phone; ' ELSE '' END +
+    CASE WHEN invalid_hire_date = 1 THEN 'Invalid Hire Date; ' ELSE '' END +
+    CASE WHEN invalid_salary = 1 THEN 'Invalid Salary; ' ELSE '' END +
+    CASE WHEN missing_department = 1 THEN 'Missing Department; ' ELSE '' END +
+    CASE WHEN self_manager = 1 THEN 'Self Manager; ' ELSE '' END +
+    CASE WHEN name_too_short = 1 THEN 'Name Too Short; ' ELSE '' END as issue_details,
+    
+    -- Data quality score
+    ROUND((1 - (missing_first_name + missing_last_name + invalid_email + invalid_phone + 
+                invalid_hire_date + invalid_salary + missing_department + self_manager + 
+                name_too_short) / 9.0) * 100, 1) as data_quality_score
+    
+FROM data_quality_checks
+ORDER BY total_issues DESC, employee_id;
+```
+
+### **Q117. Advanced reporting with dynamic calculations.**
+```sql
+WITH department_metrics AS (
+    SELECT 
+        d.department_id,
+        d.department_name,
+        COUNT(e.employee_id) as employee_count,
+        AVG(e.salary) as avg_salary,
+        SUM(e.salary) as total_payroll,
+        MIN(e.hire_date) as oldest_employee_hire,
+        MAX(e.hire_date) as newest_employee_hire
+    FROM departments d
+    LEFT JOIN employees e ON d.department_id = e.department_id
+    GROUP BY d.department_id, d.department_name
+),
+company_totals AS (
+    SELECT 
+        SUM(employee_count) as total_employees,
+        SUM(total_payroll) as total_company_payroll,
+        AVG(avg_salary) as company_avg_salary
+    FROM department_metrics
+)
+SELECT 
+    dm.department_name,
+    dm.employee_count,
+    dm.total_payroll,
+    ROUND(dm.avg_salary, 2) as avg_salary,
+    
+    -- Percentages and ratios
+    ROUND(dm.employee_count * 100.0 / ct.total_employees, 1) as pct_of_workforce,
+    ROUND(dm.total_payroll * 100.0 / ct.total_company_payroll, 1) as pct_of_payroll,
+    ROUND(dm.avg_salary / ct.company_avg_salary * 100, 1) as salary_index,
+    
+    -- Department age analysis
+    DATEDIFF(CURRENT_DATE, dm.oldest_employee_hire) as dept_age_days,
+    DATEDIFF(dm.newest_employee_hire, dm.oldest_employee_hire) as hiring_span_days,
+    
+    -- Efficiency metrics
+    CASE 
+        WHEN dm.employee_count > 0 THEN ROUND(dm.total_payroll / dm.employee_count, 2)
+        ELSE 0
+    END as cost_per_employee,
+    
+    -- Status indicators
+    CASE 
+        WHEN dm.employee_count = 0 THEN 'No Employees'
+        WHEN dm.avg_salary > ct.company_avg_salary * 1.1 THEN 'High Cost'
+        WHEN dm.avg_salary < ct.company_avg_salary * 0.9 THEN 'Low Cost'
+        ELSE 'Average Cost'
+    END as cost_category
+    
+FROM department_metrics dm
+CROSS JOIN company_totals ct
+ORDER BY dm.employee_count DESC;
+```
+
+### **Q118. Complex performance dashboard query.**
+```sql
+WITH employee_performance AS (
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.department_id,
+        e.salary,
+        e.hire_date,
+        d.department_name,
+        
+        -- Tenure calculations
+        DATEDIFF(CURRENT_DATE, e.hire_date) as days_employed,
+        ROUND(DATEDIFF(CURRENT_DATE, e.hire_date) / 365.25, 2) as years_employed,
+        
+        -- Salary rankings
+        RANK() OVER (ORDER BY e.salary DESC) as company_salary_rank,
+        RANK() OVER (PARTITION BY e.department_id ORDER BY e.salary DESC) as dept_salary_rank,
+        
+        -- Performance indicators
+        CASE 
+            WHEN e.salary >= PERCENTILE_CONT(0.8) WITHIN GROUP (ORDER BY salary) OVER () THEN 'Top 20%'
+            WHEN e.salary >= PERCENTILE_CONT(0.6) WITHIN GROUP (ORDER BY salary) OVER () THEN 'Top 40%'
+            WHEN e.salary >= PERCENTILE_CONT(0.4) WITHIN GROUP (ORDER BY salary) OVER () THEN 'Middle 40%'
+            WHEN e.salary >= PERCENTILE_CONT(0.2) WITHIN GROUP (ORDER BY salary) OVER () THEN 'Bottom 40%'
+            ELSE 'Bottom 20%'
+        END as performance_tier
+        
+    FROM employees e
+    LEFT JOIN departments d ON e.department_id = d.department_id
+),
+manager_summary AS (
+    SELECT 
+        manager_id,
+        COUNT(*) as direct_reports,
+        AVG(salary) as avg_team_salary,
+        MIN(salary) as min_team_salary,
+        MAX(salary) as max_team_salary
+    FROM employees 
+    WHERE manager_id IS NOT NULL
+    GROUP BY manager_id
+)
+SELECT 
+    ep.first_name,
+    ep.last_name,
+    ep.department_name,
+    ep.salary,
+    ep.years_employed,
+    ep.performance_tier,
+    ep.company_salary_rank,
+    ep.dept_salary_rank,
+    
+    -- Manager information
+    COALESCE(ms.direct_reports, 0) as team_size,
+    CASE 
+        WHEN ms.manager_id IS NOT NULL THEN 'Manager'
+        ELSE 'Individual Contributor'
+    END as role_type,
+    
+    -- Comparative metrics
+    ROUND(ep.salary / AVG(ep.salary) OVER (PARTITION BY ep.department_id) * 100, 1) as salary_vs_dept_avg,
+    
+    -- Career progression indicators
+    CASE 
+        WHEN ep.years_employed > 5 AND ep.dept_salary_rank <= 2 THEN 'Senior Leader'
+        WHEN ep.years_employed > 3 AND ep.dept_salary_rank <= 3 THEN 'Experienced Professional'
+        WHEN ep.years_employed > 1 THEN 'Developing Professional'
+        ELSE 'New Employee'
+    END as career_stage,
+    
+    -- Alert flags
+    CASE 
+        WHEN ep.years_employed > 5 AND ep.performance_tier IN ('Bottom 40%', 'Bottom 20%') THEN 'Retention Risk'
+        WHEN ep.years_employed < 1 AND ep.performance_tier = 'Top 20%' THEN 'High Potential'
+        WHEN ms.direct_reports > 0 AND ep.performance_tier IN ('Bottom 40%', 'Bottom 20%') THEN 'Management Concern'
+        ELSE 'Normal'
+    END as hr_flag
+    
+FROM employee_performance ep
+LEFT JOIN manager_summary ms ON ep.employee_id = ms.manager_id
+ORDER BY ep.department_id, ep.salary DESC;
+```
+
+### **Q119. Advanced analytical functions - customer lifetime value simulation.**
+```sql
+-- Note: This uses order data to simulate complex analytics
+WITH customer_metrics AS (
+    SELECT 
+        customer_id,
+        COUNT(DISTINCT order_id) as total_orders,
+        MIN(order_date) as first_order_date,
+        MAX(order_date) as last_order_date,
+        SUM(total_amount) as total_spent,
+        AVG(total_amount) as avg_order_value,
+        DATEDIFF(MAX(order_date), MIN(order_date)) as customer_lifespan_days
+    FROM orders 
+    GROUP BY customer_id
+),
+customer_segments AS (
+    SELECT 
+        *,
+        CASE 
+            WHEN total_spent >= 1000 AND total_orders >= 5 THEN 'VIP'
+            WHEN total_spent >= 500 AND total_orders >= 3 THEN 'Regular'
+            WHEN total_orders >= 2 THEN 'Occasional'
+            ELSE 'One-time'
+        END as customer_segment,
+        
+        CASE 
+            WHEN customer_lifespan_days > 365 THEN 'Long-term'
+            WHEN customer_lifespan_days > 90 THEN 'Medium-term'
+            ELSE 'Short-term'
+        END as relationship_length,
+        
+        -- Calculate purchase frequency
+        CASE 
+            WHEN customer_lifespan_days > 0 THEN total_orders / (customer_lifespan_days / 30.0)
+            ELSE total_orders
+        END as orders_per_month
+    FROM customer_metrics
+)
+SELECT 
+    customer_segment,
+    relationship_length,
+    COUNT(*) as customer_count,
+    ROUND(AVG(total_spent), 2) as avg_total_spent,
+    ROUND(AVG(avg_order_value), 2) as avg_order_value,
+    ROUND(AVG(orders_per_month), 2) as avg_orders_per_month,
+    ROUND(SUM(total_spent), 2) as segment_total_revenue,
+    
+    -- Lifetime value projections
+    ROUND(AVG(total_spent) * 1.2, 2) as projected_12_month_value,
+    
+    -- Customer health metrics
+    ROUND(AVG(customer_lifespan_days), 1) as avg_relationship_days,
+    COUNT(CASE WHEN orders_per_month >= 1 THEN 1 END) as active_customers,
+    ROUND(COUNT(CASE WHEN orders_per_month >= 1 THEN 1 END) * 100.0 / COUNT(*), 1) as active_customer_rate
+    
+FROM customer_segments
+GROUP BY customer_segment, relationship_length
+ORDER BY 
+    CASE customer_segment 
+        WHEN 'VIP' THEN 1 
+        WHEN 'Regular' THEN 2 
+        WHEN 'Occasional' THEN 3 
+        ELSE 4 
+    END,
+    CASE relationship_length 
+        WHEN 'Long-term' THEN 1 
+        WHEN 'Medium-term' THEN 2 
+        ELSE 3 
+    END;
+```
+
+### **Q120. Complex transaction analysis with rolling windows.**
+```sql
+WITH daily_order_summary AS (
+    SELECT 
+        DATE(order_date) as order_day,
+        COUNT(*) as daily_orders,
+        SUM(total_amount) as daily_revenue,
+        AVG(total_amount) as daily_avg_order,
+        COUNT(DISTINCT customer_id) as daily_customers
+    FROM orders 
+    GROUP BY DATE(order_date)
+),
+rolling_metrics AS (
+    SELECT 
+        order_day,
+        daily_orders,
+        daily_revenue,
+        daily_avg_order,
+        daily_customers,
+        
+        -- 7-day rolling averages
+        AVG(daily_orders) OVER (ORDER BY order_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as rolling_7d_avg_orders,
+        AVG(daily_revenue) OVER (ORDER BY order_day ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) as rolling_7d_avg_revenue,
+        
+        -- 30-day rolling averages
+        AVG(daily_orders) OVER (ORDER BY order_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as rolling_30d_avg_orders,
+        AVG(daily_revenue) OVER (ORDER BY order_day ROWS BETWEEN 29 PRECEDING AND CURRENT ROW) as rolling_30d_avg_revenue,
+        
+        -- Growth calculations
+        LAG(daily_revenue, 1) OVER (ORDER BY order_day) as prev_day_revenue,
+        LAG(daily_revenue, 7) OVER (ORDER BY order_day) as revenue_7d_ago,
+        LAG(daily_revenue, 30) OVER (ORDER BY order_day) as revenue_30d_ago
+    FROM daily_order_summary
+)
+SELECT 
+    order_day,
+    daily_orders,
+    ROUND(daily_revenue, 2) as daily_revenue,
+    ROUND(daily_avg_order, 2) as daily_avg_order,
+    daily_customers,
+    
+    -- Rolling averages
+    ROUND(rolling_7d_avg_orders, 1) as avg_orders_7d,
+    ROUND(rolling_7d_avg_revenue, 2) as avg_revenue_7d,
+    ROUND(rolling_30d_avg_revenue, 2) as avg_revenue_30d,
+    
+    -- Growth rates
+    ROUND((daily_revenue - prev_day_revenue) / NULLIF(prev_day_revenue, 0) * 100, 2) as day_over_day_growth,
+    ROUND((daily_revenue - revenue_7d_ago) / NULLIF(revenue_7d_ago, 0) * 100, 2) as week_over_week_growth,
+    ROUND((daily_revenue - revenue_30d_ago) / NULLIF(revenue_30d_ago, 0) * 100, 2) as month_over_month_growth,
+    
+    -- Performance indicators
+    CASE 
+        WHEN daily_revenue > rolling_7d_avg_revenue * 1.2 THEN 'Exceptional Day'
+        WHEN daily_revenue > rolling_7d_avg_revenue * 1.1 THEN 'Good Day'
+        WHEN daily_revenue < rolling_7d_avg_revenue * 0.8 THEN 'Poor Day'
+        ELSE 'Average Day'
+    END as performance_category
+    
+FROM rolling_metrics
+ORDER BY order_day DESC;
+```
+
+### **Q121. Advanced employee hierarchy and organizational analysis.**
+```sql
+WITH RECURSIVE employee_hierarchy AS (
+    -- Base case: Top-level managers (no manager)
+    SELECT 
+        employee_id,
+        first_name,
+        last_name,
+        manager_id,
+        department_id,
+        salary,
+        1 as level,
+        CAST(employee_id AS CHAR(1000)) as hierarchy_path,
+        CAST(CONCAT(last_name, ', ', first_name) AS CHAR(1000)) as name_path
+    FROM employees 
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive case: Employees with managers
+    SELECT 
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.manager_id,
+        e.department_id,
+        e.salary,
+        eh.level + 1,
+        CONCAT(eh.hierarchy_path, ' -> ', e.employee_id),
+        CONCAT(eh.name_path, ' -> ', e.last_name, ', ', e.first_name)
+    FROM employees e
+    INNER JOIN employee_hierarchy eh ON e.manager_id = eh.employee_id
+    WHERE eh.level < 10  -- Prevent infinite recursion
+),
+hierarchy_metrics AS (
+    SELECT 
+        *,
+        -- Count subordinates at each level
+        (SELECT COUNT(*) FROM employee_hierarchy eh2 WHERE eh2.hierarchy_path LIKE CONCAT(eh1.hierarchy_path, '%') AND eh2.employee_id != eh1.employee_id) as total_subordinates,
+        
+        -- Calculate span of control (direct reports)
+        (SELECT COUNT(*) FROM employees e WHERE e.manager_id = eh1.employee_id) as direct_reports,
+        
+        -- Department span
+        (SELECT COUNT(DISTINCT department_id) FROM employee_hierarchy eh3 WHERE eh3.hierarchy_path LIKE CONCAT(eh1.hierarchy_path, '%')) as departments_managed
+        
+    FROM employee_hierarchy eh1
+),
+salary_comparisons AS (
+    SELECT 
+        hm.*,
+        -- Manager salary comparison
+        (SELECT salary FROM employees WHERE employee_id = hm.manager_id) as manager_salary,
+        
+        -- Peer comparison within same level and department
+        AVG(hm2.salary) OVER (PARTITION BY hm.level, hm.department_id) as peer_avg_salary,
+        
+        -- Team salary statistics for managers
+        CASE WHEN hm.direct_reports > 0 THEN
+            (SELECT AVG(salary) FROM employees WHERE manager_id = hm.employee_id)
+        END as team_avg_salary,
+        
+        CASE WHEN hm.direct_reports > 0 THEN
+            (SELECT MAX(salary) FROM employees WHERE manager_id = hm.employee_id)
+        END as team_max_salary
+        
+    FROM hierarchy_metrics hm
+)
+SELECT 
+    REPEAT('  ', level - 1) as indentation,
+    CONCAT(first_name, ' ', last_name) as full_name,
+    level as org_level,
+    direct_reports,
+    total_subordinates,
+    departments_managed,
+    ROUND(salary, 0) as salary,
+    
+    -- Salary analysis
+    CASE 
+        WHEN manager_salary IS NOT NULL THEN 
+            ROUND((salary - manager_salary) / manager_salary * 100, 1)
+        ELSE NULL
+    END as salary_vs_manager_pct,
+    
+    ROUND((salary - peer_avg_salary) / peer_avg_salary * 100, 1) as salary_vs_peers_pct,
+    
+    -- Management effectiveness
+    CASE 
+        WHEN direct_reports = 0 THEN 'Individual Contributor'
+        WHEN direct_reports <= 3 THEN 'Team Leader'
+        WHEN direct_reports <= 8 THEN 'Manager'
+        ELSE 'Senior Manager'
+    END as management_level,
+    
+    -- Compensation fairness analysis
+    CASE 
+        WHEN team_avg_salary IS NOT NULL AND salary < team_avg_salary THEN 'Underpaid vs Team'
+        WHEN manager_salary IS NOT NULL AND salary >= manager_salary THEN 'Overpaid vs Manager'
+        ELSE 'Appropriately Paid'
+    END as compensation_assessment,
+    
+    -- Career path indicators
+    CASE 
+        WHEN level = 1 THEN 'C-Level/VP'
+        WHEN level = 2 AND direct_reports > 0 THEN 'Director'
+        WHEN level = 3 AND direct_reports > 0 THEN 'Manager'
+        WHEN level >= 4 THEN 'Senior/Lead'
+        ELSE 'Staff'
+    END as suggested_title,
+    
+    name_path as full_hierarchy_path
+    
+FROM salary_comparisons
+ORDER BY hierarchy_path;
+```
+
+### **Q122. Complex pivot analysis with dynamic columns.**
+```sql
+-- Advanced pivot showing salary distribution across multiple dimensions
+WITH salary_ranges AS (
+    SELECT 
+        employee_id,
+        department_id,
+        job_id,
+        salary,
+        CASE 
+            WHEN salary < 50000 THEN 'Under 50K'
+            WHEN salary < 70000 THEN '50K-70K'
+            WHEN salary < 90000 THEN '70K-90K'
+            ELSE '90K+'
+        END as salary_range,
+        CASE 
+            WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 2 THEN 'New'
+            WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 < 5 THEN 'Experienced'
+            ELSE 'Senior'
+        END as tenure_group
+    FROM employees
+)
+SELECT 
+    department_id,
+    job_id,
+    
+    -- Count by salary range
+    COUNT(CASE WHEN salary_range = 'Under 50K' THEN 1 END) as under_50k,
+    COUNT(CASE WHEN salary_range = '50K-70K' THEN 1 END) as range_50k_70k,
+    COUNT(CASE WHEN salary_range = '70K-90K' THEN 1 END) as range_70k_90k,
+    COUNT(CASE WHEN salary_range = '90K+' THEN 1 END) as over_90k,
+    
+    -- Count by tenure
+    COUNT(CASE WHEN tenure_group = 'New' THEN 1 END) as new_employees,
+    COUNT(CASE WHEN tenure_group = 'Experienced' THEN 1 END) as experienced_employees,
+    COUNT(CASE WHEN tenure_group = 'Senior' THEN 1 END) as senior_employees,
+    
+    -- Cross-tabulation: Tenure vs Salary
+    COUNT(CASE WHEN tenure_group = 'New' AND salary_range IN ('70K-90K', '90K+') THEN 1 END) as new_high_earners,
+    COUNT(CASE WHEN tenure_group = 'Senior' AND salary_range = 'Under 50K' THEN 1 END) as senior_low_earners,
+    
+    -- Summary statistics
+    COUNT(*) as total_employees,
+    ROUND(AVG(salary), 0) as avg_salary,
+    MIN(salary) as min_salary,
+    MAX(salary) as max_salary,
+    
+    -- Percentages
+    ROUND(COUNT(CASE WHEN salary_range IN ('70K-90K', '90K+') THEN 1 END) * 100.0 / COUNT(*), 1) as high_earner_pct
+    
+FROM salary_ranges
+GROUP BY department_id, job_id WITH ROLLUP
+HAVING COUNT(*) > 0
+ORDER BY 
+    CASE WHEN department_id IS NULL THEN 1 ELSE 0 END,
+    department_id,
+    CASE WHEN job_id IS NULL THEN 1 ELSE 0 END,
+    job_id;
+```
+
+### **Q123. Advanced time series analysis for hiring trends.**
+```sql
+WITH monthly_hiring AS (
+    SELECT 
+        DATE_FORMAT(hire_date, '%Y-%m') as hire_month,
+        YEAR(hire_date) as hire_year,
+        MONTH(hire_date) as month_num,
+        department_id,
+        COUNT(*) as hires_count,
+        AVG(salary) as avg_starting_salary
+    FROM employees 
+    GROUP BY DATE_FORMAT(hire_date, '%Y-%m'), YEAR(hire_date), MONTH(hire_date), department_id
+),
+time_series_metrics AS (
+    SELECT 
+        hire_month,
+        hire_year,
+        month_num,
+        department_id,
+        hires_count,
+        avg_starting_salary,
+        
+        -- Time series calculations
+        LAG(hires_count, 1) OVER (PARTITION BY department_id ORDER BY hire_month) as prev_month_hires,
+        LAG(hires_count, 12) OVER (PARTITION BY department_id ORDER BY hire_month) as same_month_prev_year,
+        
+        -- Rolling averages
+        AVG(hires_count) OVER (PARTITION BY department_id ORDER BY hire_month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as ma_3_months,
+        AVG(hires_count) OVER (PARTITION BY department_id ORDER BY hire_month ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) as ma_12_months,
+        
+        -- Cumulative metrics
+        SUM(hires_count) OVER (PARTITION BY department_id, hire_year ORDER BY month_num) as ytd_hires,
+        
+        -- Seasonal analysis
+        AVG(hires_count) OVER (PARTITION BY department_id, month_num) as historical_month_avg
+    FROM monthly_hiring
+),
+trend_analysis AS (
+    SELECT 
+        *,
+        -- Growth calculations
+        ROUND((hires_count - prev_month_hires) * 100.0 / NULLIF(prev_month_hires, 0), 1) as mom_growth,
+        ROUND((hires_count - same_month_prev_year) * 100.0 / NULLIF(same_month_prev_year, 0), 1) as yoy_growth,
+        ROUND((avg_starting_salary - LAG(avg_starting_salary, 1) OVER (PARTITION BY department_id ORDER BY hire_month)) * 100.0 / 
+              NULLIF(LAG(avg_starting_salary, 1) OVER (PARTITION BY department_id ORDER BY hire_month), 0), 1) as salary_growth,
+        
+        -- Trend indicators
+        CASE 
+            WHEN hires_count > ma_3_months * 1.2 THEN 'Accelerating'
+            WHEN hires_count > ma_3_months * 1.1 THEN 'Growing'
+            WHEN hires_count < ma_3_months * 0.8 THEN 'Declining'
+            WHEN hires_count < ma_3_months * 0.9 THEN 'Slowing'
+            ELSE 'Stable'
+        END as hiring_trend,
+        
+        -- Seasonal variance
+        ROUND((hires_count - historical_month_avg) / NULLIF(historical_month_avg, 0) * 100, 1) as seasonal_variance
+    FROM time_series_metrics
+)
+SELECT 
+    hire_month,
+    department_id,
+    hires_count,
+    ROUND(avg_starting_salary, 0) as avg_starting_salary,
+    
+    -- Growth metrics
+    mom_growth as month_over_month_pct,
+    yoy_growth as year_over_year_pct,
+    salary_growth as salary_growth_pct,
+    
+    -- Trend analysis
+    ROUND(ma_3_months, 1) as three_month_avg,
+    ROUND(ma_12_months, 1) as twelve_month_avg,
+    hiring_trend,
+    seasonal_variance as seasonal_variance_pct,
+    
+    -- Context
+    ytd_hires,
+    ROUND(historical_month_avg, 1) as historical_month_avg,
+    
+    -- Alerts and insights
+    CASE 
+        WHEN ABS(seasonal_variance) > 50 THEN 'Unusual Activity'
+        WHEN yoy_growth > 100 THEN 'Rapid Expansion'
+        WHEN yoy_growth < -50 THEN 'Significant Reduction'
+        WHEN hiring_trend = 'Accelerating' AND salary_growth > 10 THEN 'Competitive Market'
+        ELSE 'Normal'
+    END as insight_flag
+    
+FROM trend_analysis
+WHERE hire_month >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 24 MONTH), '%Y-%m')
+ORDER BY department_id, hire_month DESC;
+```
+
+### **Q124. Complex analytical dashboard query.**
+```sql
+-- Executive dashboard query combining multiple metrics
+WITH employee_metrics AS (
+    SELECT 
+        department_id,
+        COUNT(*) as headcount,
+        AVG(salary) as avg_salary,
+        SUM(salary) as total_payroll,
+        MIN(hire_date) as dept_established,
+        AVG(DATEDIFF(CURRENT_DATE, hire_date)) as avg_tenure_days,
+        COUNT(CASE WHEN manager_id IS NULL THEN 1 END) as managers_count,
+        COUNT(CASE WHEN commission_pct IS NOT NULL THEN 1 END) as commissioned_employees
+    FROM employees 
+    GROUP BY department_id
+),
+department_performance AS (
+    SELECT 
+        em.*,
+        d.department_name,
+        
+        -- Performance calculations
+        ROUND(total_payroll / NULLIF(headcount, 0), 2) as cost_per_employee,
+        ROUND(avg_tenure_days / 365.25, 1) as avg_tenure_years,
+        ROUND(managers_count * 100.0 / NULLIF(headcount, 0), 1) as management_ratio,
+        
+        -- Comparative metrics
+        RANK() OVER (ORDER BY avg_salary DESC) as salary_rank,
+        RANK() OVER (ORDER BY headcount DESC) as size_rank,
+        RANK() OVER (ORDER BY avg_tenure_days DESC) as retention_rank,
+        
+        -- Growth potential indicators
+        CASE 
+            WHEN avg_tenure_years > 3 AND management_ratio < 20 THEN 'Stable & Lean'
+            WHEN avg_tenure_years < 2 AND headcount > 5 THEN 'Growth Phase'
+            WHEN management_ratio > 30 THEN 'Management Heavy'
+            ELSE 'Balanced'
+        END as dept_profile
+        
+    FROM employee_metrics em
+    LEFT JOIN departments d ON em.department_id = d.department_id
+),
+company_benchmarks AS (
+    SELECT 
+        SUM(headcount) as total_headcount,
+        AVG(avg_salary) as company_avg_salary,
+        SUM(total_payroll) as company_payroll,
+        AVG(avg_tenure_days) as company_avg_tenure
+    FROM employee_metrics
+)
+SELECT 
+    dp.department_name,
+    dp.headcount,
+    dp.avg_salary,
+    dp.total_payroll,
+    dp.avg_tenure_years,
+    dp.management_ratio,
+    dp.dept_profile,
+    
+    -- Rankings
+    CONCAT('#', dp.salary_rank) as salary_rank,
+    CONCAT('#', dp.size_rank) as size_rank,
+    CONCAT('#', dp.retention_rank) as retention_rank,
+    
+    -- Comparative analysis
+    ROUND(dp.avg_salary / cb.company_avg_salary * 100, 1) as salary_vs_company_avg,
+    ROUND(dp.headcount * 100.0 / cb.total_headcount, 1) as pct_of_workforce,
+    ROUND(dp.total_payroll * 100.0 / cb.company_payroll, 1) as pct_of_payroll,
+    
+    -- Department health indicators
+    CASE 
+        WHEN dp.avg_tenure_years > 5 THEN 'Excellent Retention'
+        WHEN dp.avg_tenure_years > 3 THEN 'Good Retention'
+        WHEN dp.avg_tenure_years > 1 THEN 'Average Retention'
+        ELSE 'High Turnover Risk'
+    END as retention_health,
+    
+    CASE 
+        WHEN dp.avg_salary > cb.company_avg_salary * 1.2 THEN 'Premium Department'
+        WHEN dp.avg_salary > cb.company_avg_salary * 0.8 THEN 'Competitive Salaries'
+        ELSE 'Budget Conscious'
+    END as compensation_strategy,
+    
+    -- Strategic insights
+    CASE 
+        WHEN dp.headcount < 3 THEN 'Consider Expansion'
+        WHEN dp.management_ratio > 40 THEN 'Review Management Structure'
+        WHEN dp.avg_salary < cb.company_avg_salary * 0.7 THEN 'Risk of Talent Loss'
+        WHEN dp.pct_of_payroll > dp.pct_of_workforce * 1.3 THEN 'High Investment Department'
+        ELSE 'Well Balanced'
+    END as strategic_insight
+    
+FROM department_performance dp
+CROSS JOIN company_benchmarks cb
+ORDER BY dp.headcount DESC;
+```
+
+### **Q125. Ultra-complex query combining multiple advanced techniques.**
+```sql
+-- Master query combining CTEs, window functions, subqueries, and advanced analytics
+WITH RECURSIVE 
+-- 1. Build complete organizational hierarchy
+org_structure AS (
+    SELECT 
+        employee_id, first_name, last_name, manager_id, department_id, salary, hire_date, job_id,
+        1 as org_level,
+        CAST(employee_id AS CHAR(500)) as hierarchy_path,
+        employee_id as top_manager_id
+    FROM employees WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        e.employee_id, e.first_name, e.last_name, e.manager_id, e.department_id, 
+        e.salary, e.hire_date, e.job_id,
+        os.org_level + 1,
+        CONCAT(os.hierarchy_path, '->', e.employee_id),
+        os.top_manager_id
+    FROM employees e
+    JOIN org_structure os ON e.manager_id = os.employee_id
+    WHERE os.org_level < 10
+),
+-- 2. Calculate advanced employee metrics
+employee_analytics AS (
+    SELECT 
+        os.*,
+        d.department_name,
+        j.job_title,
+        j.min_salary as job_min_salary,
+        j.max_salary as job_max_salary,
+        
+        -- Time-based calculations
+        DATEDIFF(CURRENT_DATE, hire_date) as days_employed,
+        ROUND(DATEDIFF(CURRENT_DATE, hire_date) / 365.25, 2) as years_employed,
+        DAYOFWEEK(hire_date) as hire_day_of_week,
+        
+        -- Hierarchical calculations
+        (SELECT COUNT(*) FROM org_structure os2 WHERE os2.manager_id = os.employee_id) as direct_reports,
+        (SELECT COUNT(*) FROM org_structure os3 WHERE os3.hierarchy_path LIKE CONCAT(os.hierarchy_path, '%') AND os3.employee_id != os.employee_id) as total_subordinates,
+        
+        -- Salary analytics
+        PERCENT_RANK() OVER (ORDER BY salary) as company_salary_percentile,
+        PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary) as dept_salary_percentile,
+        PERCENT_RANK() OVER (PARTITION BY job_id ORDER BY salary) as job_salary_percentile,
+        
+        -- Performance rankings
+        DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_salary_rank,
+        ROW_NUMBER() OVER (PARTITION BY org_level ORDER BY salary DESC) as level_salary_rank
+        
+    FROM org_structure os
+    LEFT JOIN departments d ON os.department_id = d.department_id
+    LEFT JOIN jobs j ON os.job_id = j.job_id
+),
+-- 3. Department and team analytics
+team_analytics AS (
+    SELECT 
+        ea.*,
+        
+        -- Team statistics (for managers)
+        CASE WHEN direct_reports > 0 THEN
+            (SELECT AVG(salary) FROM employee_analytics WHERE manager_id = ea.employee_id)
+        END as team_avg_salary,
+        
+        CASE WHEN direct_reports > 0 THEN
+            (SELECT STDDEV(salary) FROM employee_analytics WHERE manager_id = ea.employee_id)
+        END as team_salary_stddev,
+        
+        -- Department comparisons
+        AVG(salary) OVER (PARTITION BY department_id) as dept_avg_salary,
+        COUNT(*) OVER (PARTITION BY department_id) as dept_size,
+        AVG(years_employed) OVER (PARTITION BY department_id) as dept_avg_tenure,
+        
+        -- Peer comparisons (same level, different department)
+        AVG(salary) OVER (PARTITION BY org_level) as level_avg_salary,
+        
+        -- Advanced window functions
+        LAG(salary) OVER (PARTITION BY department_id ORDER BY hire_date) as prev_hire_salary,
+        LEAD(salary) OVER (PARTITION BY department_id ORDER BY hire_date) as next_hire_salary,
+        
+        -- Cumulative metrics
+        SUM(salary) OVER (PARTITION BY department_id ORDER BY hire_date ROWS UNBOUNDED PRECEDING) as cumulative_dept_payroll,
+        
+        -- Moving averages
+        AVG(salary) OVER (PARTITION BY department_id ORDER BY hire_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as rolling_3_hire_avg_salary
+        
+    FROM employee_analytics ea
+),
+-- 4. Risk and opportunity analysis
+risk_opportunity AS (
+    SELECT 
+        ta.*,
+        
+        -- Career progression analysis
+        CASE 
+            WHEN years_employed > 5 AND org_level > 3 THEN 'Career Plateau Risk'
+            WHEN years_employed > 7 AND dept_salary_rank > 3 THEN 'Promotion Overdue'
+            WHEN years_employed < 2 AND company_salary_percentile > 0.8 THEN 'High Potential'
+            WHEN years_employed > 3 AND company_salary_percentile < 0.3 THEN 'Retention Risk'
+            ELSE 'Normal Progression'
+        END as career_status,
+        
+        -- Compensation analysis
+        CASE 
+            WHEN salary < job_min_salary * 0.95 THEN 'Below Job Range'
+            WHEN salary > job_max_salary * 1.05 THEN 'Above Job Range'
+            WHEN salary < dept_avg_salary * 0.8 AND years_employed > 2 THEN 'Underpaid vs Peers'
+            WHEN salary > dept_avg_salary * 1.3 AND direct_reports = 0 THEN 'Overpaid Individual Contributor'
+            ELSE 'Appropriately Compensated'
+        END as compensation_status,
+        
+        -- Management effectiveness
+        CASE 
+            WHEN direct_reports > 0 AND team_avg_salary > salary THEN 'Manages Higher Paid Team'
+            WHEN direct_reports > 8 THEN 'Wide Span of Control'
+            WHEN direct_reports > 0 AND team_salary_stddev > salary * 0.3 THEN 'High Team Salary Variance'
+            WHEN direct_reports = 0 AND org_level <= 2 THEN 'Senior Individual Contributor'
+            ELSE 'Standard Management'
+        END as management_assessment,
+        
+        -- Market competitiveness
+        ROUND(salary / NULLIF(level_avg_salary, 0) * 100, 1) as salary_vs_level_peers,
+        ROUND(salary / NULLIF((job_min_salary + job_max_salary) / 2, 0) * 100, 1) as salary_vs_job_midpoint
+        
+    FROM team_analytics ta
+)
+-- 5. Final comprehensive report
+SELECT 
+    -- Basic information
+    CONCAT(first_name, ' ', last_name) as full_name,
+    department_name,
+    job_title,
+    org_level,
+    direct_reports,
+    
+    -- Compensation details
+    salary,
+    ROUND(company_salary_percentile * 100, 1) as company_percentile,
+    ROUND(dept_salary_percentile * 100, 1) as dept_percentile,
+    
+    -- Performance indicators
+    career_status,
+    compensation_status,
+    management_assessment,
+    
+    -- Detailed analytics
+    years_employed,
+    dept_salary_rank,
+    salary_vs_level_peers as pct_vs_level_peers,
+    salary_vs_job_midpoint as pct_vs_job_midpoint,
+    
+    -- Strategic insights
+    CASE 
+        WHEN career_status IN ('High Potential', 'Promotion Overdue') THEN 'Development Opportunity'
+        WHEN career_status IN ('Career Plateau Risk', 'Retention Risk') THEN 'Retention Focus'
+        WHEN compensation_status LIKE '%Underpaid%' THEN 'Compensation Review'
+        WHEN compensation_status LIKE '%Overpaid%' THEN 'Role Evaluation'
+        ELSE 'Monitor'
+    END as hr_action_item,
+    
+    -- Future planning
+    CASE 
+        WHEN org_level = 1 THEN 'Executive'
+        WHEN org_level = 2 AND direct_reports > 0 THEN 'Senior Management'
+        WHEN org_level = 3 AND direct_reports > 0 THEN 'Middle Management'
+        WHEN direct_reports > 0 THEN 'Team Lead'
+        WHEN years_employed > 5 AND company_salary_percentile > 0.7 THEN 'Senior IC'
+        ELSE 'Staff Level'
+    END as career_track,
+    
+    -- Context for decision making
+    CONCAT(
+        'Reports to: ', (SELECT CONCAT(first_name, ' ', last_name) FROM employees WHERE employee_id = ro.manager_id),
+        ' | Team Size: ', direct_reports,
+        ' | Dept Rank: #', dept_salary_rank,
+        ' | Tenure: ', years_employed, ' years'
+    ) as context_summary
+    
+FROM risk_opportunity ro
+ORDER BY 
+    department_id, 
+    org_level, 
+    CASE 
+        WHEN career_status IN ('High Potential', 'Promotion Overdue') THEN 1
+        WHEN career_status IN ('Career Plateau Risk', 'Retention Risk') THEN 2
+        ELSE 3
+    END,
+    salary DESC;
+```
+
+---
+
+## 🎯 **INTERVIEW SUCCESS TIPS & FINAL PRACTICE**
+
+### **🔥 Most Frequently Asked Interview Questions (126-150)**
+
+### **Q126. Find employees who earn more than their manager.**
+```sql
+SELECT e.first_name as employee, e.salary as emp_salary,
+       m.first_name as manager, m.salary as mgr_salary,
+       e.salary - m.salary as salary_difference
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary;
+```
+
+### **Q127. Find second highest salary by department.**
+```sql
+SELECT department_id, 
+       MAX(salary) as second_highest_salary
+FROM employees e1
+WHERE salary < (
+    SELECT MAX(salary) 
+    FROM employees e2 
+    WHERE e1.department_id = e2.department_id
+)
+GROUP BY department_id;
+
+-- Alternative using window functions
+SELECT department_id, salary
+FROM (
+    SELECT department_id, salary,
+           DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as rank_num
+    FROM employees
+) ranked
+WHERE rank_num = 2;
+```
+
+### **Q128. Find employees hired on the same date.**
+```sql
+SELECT hire_date, 
+       GROUP_CONCAT(CONCAT(first_name, ' ', last_name)) as employees_hired,
+       COUNT(*) as count_hired
+FROM employees 
+GROUP BY hire_date 
+HAVING COUNT(*) > 1;
+```
+
+### **Q129. Calculate running total of salaries.**
+```sql
+SELECT first_name, department_id, salary,
+       SUM(salary) OVER (ORDER BY employee_id ROWS UNBOUNDED PRECEDING) as running_total,
+       SUM(salary) OVER (PARTITION BY department_id ORDER BY employee_id ROWS UNBOUNDED PRECEDING) as dept_running_total
+FROM employees
+ORDER BY employee_id;
+```
+
+### **Q130. Find employees with no subordinates (leaf nodes).**
+```sql
+SELECT e1.first_name, e1.employee_id
+FROM employees e1
+WHERE e1.employee_id NOT IN (
+    SELECT DISTINCT COALESCE(manager_id, 0) 
+    FROM employees 
+    WHERE manager_id IS NOT NULL
+);
+```
+
+### **Q131. Create employee hierarchy levels.**
+```sql
+WITH RECURSIVE hierarchy AS (
+    SELECT employee_id, first_name, manager_id, 1 as level
+    FROM employees WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    SELECT e.employee_id, e.first_name, e.manager_id, h.level + 1
+    FROM employees e
+    JOIN hierarchy h ON e.manager_id = h.employee_id
+)
+SELECT first_name, level,
+       CASE 
+           WHEN level = 1 THEN 'Executive'
+           WHEN level = 2 THEN 'Senior Management' 
+           WHEN level = 3 THEN 'Middle Management'
+           ELSE 'Staff'
+       END as position_level
+FROM hierarchy
+ORDER BY level, first_name;
+```
+
+### **Q132. Find salary gaps between consecutive employees.**
+```sql
+SELECT first_name, salary,
+       salary - LAG(salary) OVER (ORDER BY salary) as salary_gap_from_previous,
+       LEAD(salary) OVER (ORDER BY salary) - salary as salary_gap_to_next
+FROM employees
+ORDER BY salary;
+```
+
+### **Q133. Identify potential duplicate records.**
+```sql
+SELECT first_name, last_name, 
+       LEFT(phone, 3) as area_code,
+       COUNT(*) as potential_duplicates
+FROM employees 
+GROUP BY first_name, last_name, LEFT(phone, 3)
+HAVING COUNT(*) > 1;
+```
+
+### **Q134. Calculate employee age groups.**
+```sql
+SELECT 
+    CASE 
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 1 THEN 'New (< 1 year)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 5 THEN 'Experienced (1-5 years)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 10 THEN 'Senior (5-10 years)'
+        ELSE 'Veteran (10+ years)'
+    END as tenure_group,
+    COUNT(*) as employee_count,
+    AVG(salary) as avg_salary_in_group
+FROM employees 
+GROUP BY 
+    CASE 
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 1 THEN 'New (< 1 year)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 5 THEN 'Experienced (1-5 years)'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date)/365 < 10 THEN 'Senior (5-10 years)'
+        ELSE 'Veteran (10+ years)'
+    END
+ORDER BY AVG(salary) DESC;
+```
+
+### **Q135. Find top 3 highest paid employees per department.**
+```sql
+SELECT department_id, first_name, salary, salary_rank
+FROM (
+    SELECT department_id, first_name, salary,
+           RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as salary_rank
+    FROM employees
+) ranked
+WHERE salary_rank <= 3
+ORDER BY department_id, salary_rank;
+```
+
+### **Q136. Calculate salary percentiles.**
+```sql
+SELECT first_name, salary,
+       ROUND(PERCENT_RANK() OVER (ORDER BY salary) * 100, 1) as salary_percentile,
+       NTILE(10) OVER (ORDER BY salary) as salary_decile,
+       CASE 
+           WHEN PERCENT_RANK() OVER (ORDER BY salary) >= 0.9 THEN 'Top 10%'
+           WHEN PERCENT_RANK() OVER (ORDER BY salary) >= 0.75 THEN 'Top 25%'
+           WHEN PERCENT_RANK() OVER (ORDER BY salary) >= 0.5 THEN 'Top 50%'
+           ELSE 'Bottom 50%'
+       END as performance_tier
+FROM employees
+ORDER BY salary DESC;
+```
+
+### **Q137. Find employees with unique salaries.**
+```sql
+SELECT first_name, salary
+FROM employees e1
+WHERE NOT EXISTS (
+    SELECT 1 FROM employees e2 
+    WHERE e2.salary = e1.salary AND e2.employee_id != e1.employee_id
+);
+```
+
+### **Q138. Create salary histogram.**
+```sql
+SELECT 
+    FLOOR(salary/10000)*10000 as salary_range_start,
+    FLOOR(salary/10000)*10000 + 9999 as salary_range_end,
+    COUNT(*) as employee_count,
+    ROUND(AVG(salary), 2) as avg_salary_in_range,
+    GROUP_CONCAT(first_name ORDER BY salary) as employees_in_range
+FROM employees 
+GROUP BY FLOOR(salary/10000)
+ORDER BY salary_range_start;
+```
+
+### **Q139. Find month with most hirings.**
+```sql
+SELECT MONTHNAME(hire_date) as month_name,
+       MONTH(hire_date) as month_number,
+       COUNT(*) as hiring_count
+FROM employees 
+GROUP BY MONTH(hire_date), MONTHNAME(hire_date)
+ORDER BY hiring_count DESC
+LIMIT 1;
+```
+
+### **Q140. Calculate department salary ratios.**
+```sql
+SELECT d.department_name,
+       COUNT(e.employee_id) as employee_count,
+       SUM(e.salary) as total_dept_salary,
+       AVG(e.salary) as avg_dept_salary,
+       SUM(e.salary) * 100.0 / (SELECT SUM(salary) FROM employees) as pct_of_total_payroll,
+       MAX(e.salary) / MIN(e.salary) as salary_ratio
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name
+HAVING COUNT(e.employee_id) > 0
+ORDER BY total_dept_salary DESC;
+```
+
+### **Q141. Find employees hired on weekends.**
+```sql
+SELECT first_name, hire_date, 
+       DAYNAME(hire_date) as day_of_week,
+       CASE WHEN DAYOFWEEK(hire_date) IN (1,7) THEN 'Weekend' ELSE 'Weekday' END as hire_type
+FROM employees 
+WHERE DAYOFWEEK(hire_date) IN (1, 7)  -- Sunday=1, Saturday=7
+ORDER BY hire_date;
+```
+
+### **Q142. Compare employee count by year.**
+```sql
+SELECT 
+    YEAR(hire_date) as hire_year,
+    COUNT(*) as employees_hired,
+    LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date)) as prev_year_hires,
+    COUNT(*) - LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date)) as hiring_change,
+    ROUND((COUNT(*) - LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date))) * 100.0 / 
+          NULLIF(LAG(COUNT(*)) OVER (ORDER BY YEAR(hire_date)), 0), 1) as pct_change
+FROM employees 
+GROUP BY YEAR(hire_date)
+ORDER BY hire_year;
+```
+
+### **Q143. Find salary outliers using IQR method.**
+```sql
+WITH salary_quartiles AS (
+    SELECT 
+        PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY salary) as Q1,
+        PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY salary) as Q3
+    FROM employees
+),
+outlier_bounds AS (
+    SELECT 
+        Q1,
+        Q3,
+        Q3 - Q1 as IQR,
+        Q1 - 1.5 * (Q3 - Q1) as lower_bound,
+        Q3 + 1.5 * (Q3 - Q1) as upper_bound
+    FROM salary_quartiles
+)
+SELECT e.first_name, e.salary,
+       CASE 
+           WHEN e.salary < ob.lower_bound THEN 'Low Outlier'
+           WHEN e.salary > ob.upper_bound THEN 'High Outlier'
+           ELSE 'Normal'
+       END as outlier_status
+FROM employees e
+CROSS JOIN outlier_bounds ob
+WHERE e.salary < ob.lower_bound OR e.salary > ob.upper_bound
+ORDER BY e.salary;
+```
+
+### **Q144. Create employee performance matrix.**
+```sql
+SELECT 
+    first_name,
+    CASE 
+        WHEN salary >= PERCENTILE_CONT(0.8) WITHIN GROUP (ORDER BY salary) OVER () THEN 'High'
+        WHEN salary >= PERCENTILE_CONT(0.6) WITHIN GROUP (ORDER BY salary) OVER () THEN 'Medium'
+        ELSE 'Low'
+    END as salary_performance,
+    
+    CASE 
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 >= 5 THEN 'High'
+        WHEN DATEDIFF(CURRENT_DATE, hire_date) / 365 >= 2 THEN 'Medium'  
+        ELSE 'Low'
+    END as tenure_level,
+    
+    salary,
+    ROUND(DATEDIFF(CURRENT_DATE, hire_date) / 365, 1) as years_employed
+FROM employees
+ORDER BY salary DESC;
+```
+
+### **Q145. Generate employee summary report.**
+```sql
+SELECT 
+    'Total Employees' as metric,
+    CAST(COUNT(*) AS CHAR) as value
+FROM employees
+
+UNION ALL
+
+SELECT 
+    'Average Salary',
+    CONCAT(', FORMAT(AVG(salary), 2))
+FROM employees
+
+UNION ALL
+
+SELECT 
+    'Total Payroll',
+    CONCAT(', FORMAT(SUM(salary), 2))
+FROM employees
+
+UNION ALL
+
+SELECT 
+    'Departments',
+    CAST(COUNT(DISTINCT department_id) AS CHAR)
+FROM employees
+
+UNION ALL
+
+SELECT 
+    'Average Tenure (Years)',
+    CAST(ROUND(AVG(DATEDIFF(CURRENT_DATE, hire_date)) / 365, 1) AS CHAR)
+FROM employees
+
+ORDER BY 
+    CASE metric 
+        WHEN 'Total Employees' THEN 1
+        WHEN 'Departments' THEN 2  
+        WHEN 'Average Salary' THEN 3
+        WHEN 'Total Payroll' THEN 4
+        WHEN 'Average Tenure (Years)' THEN 5
+    END;
+```
+
+### **Q146. Find the longest gap between consecutive hire dates.**
+```sql
+WITH hire_gaps AS (
+    SELECT 
+        hire_date,
+        LAG(hire_date) OVER (ORDER BY hire_date) as prev_hire_date,
+        DATEDIFF(hire_date, LAG(hire_date) OVER (ORDER BY hire_date)) as days_gap
+    FROM employees
+    ORDER BY hire_date
+)
+SELECT 
+    prev_hire_date,
+    hire_date,
+    days_gap as longest_gap_days
+FROM hire_gaps
+WHERE days_gap = (SELECT MAX(days_gap) FROM hire_gaps);
+```
+
+### **Q147. Calculate employee retention rate by department.**
+```sql
+-- Assuming all employees are still active (no termination date)
+SELECT 
+    d.department_name,
+    COUNT(e.employee_id) as total_hired,
+    COUNT(e.employee_id) as still_employed,  -- All are still employed
+    100.0 as retention_rate,  -- 100% since no one left
+    AVG(DATEDIFF(CURRENT_DATE, e.hire_date)) / 365 as avg_tenure_years
+FROM departments d
+LEFT JOIN employees e ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name
+HAVING COUNT(e.employee_id) > 0
+ORDER BY retention_rate DESC;
+```
+
+### **Q148. Find employees with similar names (soundex).**
+```sql
+SELECT 
+    e1.first_name as name1,
+    e2.first_name as name2,
+    SOUNDEX(e1.first_name) as soundex_code
+FROM employees e1
+JOIN employees e2 ON SOUNDEX(e1.first_name) = SOUNDEX(e2.first_name)
+WHERE e1.employee_id < e2.employee_id  -- Avoid duplicates
+ORDER BY soundex_code;
+```
+
+### **Q149. Create a comprehensive employee audit report.**
+```sql
+SELECT 
+    CONCAT(first_name, ' ', last_name) as full_name,
+    email,
+    department_id,
+    salary,
+    hire_date,
+    
+    -- Data validation
+    CASE WHEN email LIKE '%@%.%' THEN 'Valid' ELSE 'Invalid' END as email_validation,
+    CASE WHEN salary > 0 THEN 'Valid' ELSE 'Invalid' END as salary_validation,
+    CASE WHEN hire_date <= CURRENT_DATE THEN 'Valid' ELSE 'Invalid' END as hire_date_validation,
+    
+    -- Business rules validation
+    CASE WHEN manager_id = employee_id THEN 'ERROR: Self-manager' ELSE 'OK' END as manager_validation,
+    CASE WHEN salary < 20000 THEN 'WARNING: Very low salary' ELSE 'OK' END as salary_warning,
+    
+    -- Summary status
+    CASE 
+        WHEN email NOT LIKE '%@%.%' OR salary <= 0 OR hire_date > CURRENT_DATE OR manager_id = employee_id 
+        THEN 'REQUIRES ATTENTION'
+        WHEN salary < 20000 
+        THEN 'REVIEW RECOMMENDED'
+        ELSE 'OK'
+    END as overall_status
+    
+FROM employees
+ORDER BY 
+    CASE 
+        WHEN email NOT LIKE '%@%.%' OR salary <= 0 OR hire_date > CURRENT_DATE OR manager_id = employee_id 
+        THEN 1
+        WHEN salary < 20000 
+        THEN 2
+        ELSE 3
+    END,
+    last_name, first_name;
+```
+
+### **Q150. Master query - Complete employee analytics dashboard.**
+```sql
+WITH employee_stats AS (
+    SELECT 
+        employee_id, first_name, last_name, department_id, salary, hire_date,
+        DATEDIFF(CURRENT_DATE, hire_date) as days_employed,
+        RANK() OVER (ORDER BY salary DESC) as company_rank,
+        RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) as dept_rank,
+        COUNT(*) OVER (PARTITION BY department_id) as dept_size,
+        AVG(salary) OVER (PARTITION BY department_id) as dept_avg_salary,
+        (SELECT COUNT(*) FROM employees WHERE manager_id = e.employee_id) as direct_reports
+    FROM employees e
+),
+performance_tiers AS (
+    SELECT *,
+        CASE 
+            WHEN company_rank <= (SELECT COUNT(*) * 0.1 FROM employees) THEN 'Top 10%'
+            WHEN company_rank <= (SELECT COUNT(*) * 0.25 FROM employees) THEN 'Top 25%'
+            WHEN company_rank <= (SELECT COUNT(*) * 0.5 FROM employees) THEN 'Top 50%'
+            ELSE 'Bottom 50%'
+        END as performance_tier,
+        CASE 
+            WHEN days_employed >= 1825 THEN 'Veteran (5+ years)'  -- 5 years
+            WHEN days_employed >= 1095 THEN 'Experienced (3-5 years)'  -- 3 years
+            WHEN days_employed >= 365 THEN 'Intermediate (1-3 years)'
+            ELSE 'New (< 1 year)'
+        END as tenure_category
+    FROM employee_stats
+)
+SELECT 
+    CONCAT(first_name, ' ', last_name) as employee_name,
+    department_id,
+    salary,
+    performance_tier,
+    tenure_category,
+    CONCAT('#', company_rank, ' of ', (SELECT COUNT(*) FROM employees)) as company_ranking,
+    CONCAT('#', dept_rank, ' of ', dept_size) as department_ranking,
+    ROUND(salary * 100.0 / dept_avg_salary, 1) as salary_vs_dept_avg_pct,
+    direct_reports,
+    ROUND(days_employed / 365.25, 1) as years_employed,
+    
+    -- Key insights
+    CASE 
+        WHEN performance_tier = 'Top 10%' AND tenure_category LIKE 'New%' THEN 'HIGH POTENTIAL'
+        WHEN performance_tier IN ('Bottom 50%') AND tenure_category LIKE 'Veteran%' THEN 'RETENTION RISK'
+        WHEN direct_reports > 0 AND performance_tier = 'Top 25%' THEN 'STRONG LEADER'
+        WHEN salary > dept_avg_salary * 1.5 AND direct_reports = 0 THEN 'SENIOR IC'
+        ELSE 'STANDARD'
+    END as employee_classification,
+    
+    -- Action items
+    CASE 
+        WHEN performance_tier = 'Top 10%' THEN 'Consider for promotion/leadership roles'
+        WHEN performance_tier = 'Bottom 50%' AND days_employed > 1095 THEN 'Performance review recommended'  
+        WHEN salary < dept_avg_salary * 0.8 AND days_employed > 730 THEN 'Salary review recommended'
+        ELSE 'Continue monitoring'
+    END as recommended_action
+    
+FROM performance_tiers
+ORDER BY department_id, company_rank;
+```
+
+---
+
+## 🏆 **LAST-MINUTE INTERVIEW PREP CHECKLIST**
+
+### **🔥 Essential Concepts to Master:**
+1. **JOINs** - INNER, LEFT, RIGHT, FULL OUTER, SELF
+2. **Window Functions** - RANK, DENSE_RANK, ROW_NUMBER, LAG, LEAD
+3. **Subqueries** - Correlated and Non-correlated  
+4. **CTEs** - Common Table Expressions and Recursive CTEs
+5. **Aggregate Functions** - GROUP BY, HAVING, COUNT, SUM, AVG
+6. **String Functions** - SUBSTRING, CONCAT, LIKE, REGEXP
+
+### **🎯 Top 10 Must-Know Patterns:**
+1. Find Nth highest salary
+2. Running totals and moving averages  
+3. Employee hierarchy queries
+4. Duplicate detection and removal
+5. Date/time calculations and trends
+6. Pivot tables and cross-tabulation
+7. Ranking and percentile calculations
+8. Data validation and quality checks
+9. Performance comparison queries
+10. Complex analytical dashboards
+
+### **💡 Interview Success Strategies:**
+
+#### **Before the Interview:**
+- Practice writing queries by hand
+- Review your SQL fundamentals 
+- Prepare to explain your thought process
+- Study the company's likely database schema
+
+#### **During the Interview:**
+- Ask clarifying questions about requirements
+- Start with simple solutions, then optimize
+- Explain your logic as you write
+- Test your queries mentally for edge cases
+- Discuss performance implications
+
+#### **Common Mistakes to Avoid:**
+- Not handling NULL values properly
+- Forgetting to use DISTINCT when needed
+- Mixing aggregate and non-aggregate columns without GROUP BY
+- Not considering performance for large datasets
+- Overcomplicating simple problems
+
+### **🚀 Final Practice Routine:**
+1. **Day Before:** Review basics (JOINs, GROUP BY, Window Functions)
+2. **Morning Of:** Practice 5-10 medium difficulty questions
+3. **Right Before:** Review your notes on optimization and best practices
+
+### **🎪 Bonus: Quick Reference Cheat Sheet:**
+
+```sql
+-- Find Nth highest
+SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET N-1;
+
+-- Running total  
+SELECT salary, SUM(salary) OVER (ORDER BY employee_id) as running_total FROM employees;
+
+-- Rank with ties
+SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rank FROM employees;
+
+-- Duplicate detection
+SELECT column, COUNT(*) FROM table GROUP BY column HAVING COUNT(*) > 1;
+
+-- Self join for hierarchy
+SELECT e.name, m.name as manager FROM employees e LEFT JOIN employees m ON e.manager_id = m.id;
+```
+
+---
+
+## 🎉 **YOU'RE READY! GOOD LUCK WITH YOUR INTERVIEW!**
+
+Remember: **Confidence + Clear Thinking + Practice = Success**
+
+The key is not to memorize every query, but to understand the patterns and be able to adapt them to solve new problems. You've got this! 💪
